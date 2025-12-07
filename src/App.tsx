@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { Lock } from 'lucide-react';
+import { Lock, Settings as SettingsIcon } from 'lucide-react';
+import AdminPage from './components/AdminPage';
 
 function App() {
   const [pin, setPin] = useState('');
   const [isUnlocked, setIsUnlocked] = useState(false);
+  const [showAdmin, setShowAdmin] = useState(false);
 
   const handleNumberClick = (num: string) => {
     if (pin.length < 4) {
@@ -66,9 +68,7 @@ function App() {
             >
               0
             </button>
-            <button
-              className="h-16 bg-blue-600 text-white rounded-xl transition-colors"
-            >
+            <button className="h-16 bg-blue-600 text-white rounded-xl transition-colors">
               ✓
             </button>
           </div>
@@ -83,58 +83,91 @@ function App() {
     );
   }
 
+  if (showAdmin) {
+    return <AdminPage />;
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="bg-white rounded-xl shadow-lg p-8 mb-6">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">🎉 Gîte Master v2.0</h1>
-          <p className="text-xl text-gray-600">Application déployée avec succès sur Vercel !</p>
-        </div>
-
-        <div className="grid md:grid-cols-3 gap-6">
-          <div className="bg-white rounded-xl shadow p-6">
-            <div className="text-3xl mb-2">📊</div>
-            <h3 className="font-bold text-lg mb-2">Dashboard</h3>
-            <p className="text-gray-600">Vue d'ensemble de vos locations</p>
-          </div>
-
-          <div className="bg-white rounded-xl shadow p-6">
-            <div className="text-3xl mb-2">📅</div>
-            <h3 className="font-bold text-lg mb-2">Calendrier</h3>
-            <p className="text-gray-600">Gérez vos réservations</p>
-          </div>
-
-          <div className="bg-white rounded-xl shadow p-6">
-            <div className="text-3xl mb-2">💬</div>
-            <h3 className="font-bold text-lg mb-2">Messagerie</h3>
-            <p className="text-gray-600">Communiquez avec vos clients</p>
-          </div>
-
-          <div className="bg-white rounded-xl shadow p-6">
-            <div className="text-3xl mb-2">💰</div>
-            <h3 className="font-bold text-lg mb-2">Comptabilité</h3>
-            <p className="text-gray-600">Taxe de séjour automatique</p>
-          </div>
-
-          <div className="bg-white rounded-xl shadow p-6">
-            <div className="text-3xl mb-2">🔄</div>
-            <h3 className="font-bold text-lg mb-2">Synchronisation</h3>
-            <p className="text-gray-600">Airbnb, Booking.com</p>
-          </div>
-
-          <div className="bg-white rounded-xl shadow p-6">
-            <div className="text-3xl mb-2">⚙️</div>
-            <h3 className="font-bold text-lg mb-2">Administration</h3>
-            <p className="text-gray-600">Paramètres de l'application</p>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header with Admin button */}
+      <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-4">
+            <h1 className="text-2xl font-bold text-gray-900">Gîte Master v2.0</h1>
+            <button
+              onClick={() => setShowAdmin(true)}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2 transition-colors"
+            >
+              <SettingsIcon size={18} />
+              <span className="hidden sm:inline">Administration</span>
+            </button>
           </div>
         </div>
+      </div>
 
-        <div className="mt-8 bg-green-50 border border-green-200 rounded-xl p-6">
-          <h3 className="font-bold text-green-900 mb-2">✅ Déploiement réussi !</h3>
-          <p className="text-green-700">
-            Votre application Gîte Master est maintenant en ligne et accessible depuis n'importe où.
-            Les modules complets seront ajoutés progressivement.
-          </p>
+      <div className="p-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="bg-white rounded-xl shadow-lg p-8 mb-6">
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">🎉 Application déployée avec succès !</h1>
+            <p className="text-xl text-gray-600">
+              Cliquez sur "Administration" en haut à droite pour configurer votre application.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="bg-white rounded-xl shadow p-6">
+              <div className="text-3xl mb-2">📊</div>
+              <h3 className="font-bold text-lg mb-2">Dashboard</h3>
+              <p className="text-gray-600">Vue d'ensemble de vos locations</p>
+              <p className="text-sm text-gray-400 mt-2">Module complet à venir</p>
+            </div>
+
+            <div className="bg-white rounded-xl shadow p-6">
+              <div className="text-3xl mb-2">📅</div>
+              <h3 className="font-bold text-lg mb-2">Calendrier</h3>
+              <p className="text-gray-600">Gérez vos réservations</p>
+              <p className="text-sm text-gray-400 mt-2">Module complet à venir</p>
+            </div>
+
+            <div className="bg-white rounded-xl shadow p-6">
+              <div className="text-3xl mb-2">💬</div>
+              <h3 className="font-bold text-lg mb-2">Messagerie</h3>
+              <p className="text-gray-600">Communiquez avec vos clients</p>
+              <p className="text-sm text-gray-400 mt-2">Module complet à venir</p>
+            </div>
+
+            <div className="bg-white rounded-xl shadow p-6">
+              <div className="text-3xl mb-2">💰</div>
+              <h3 className="font-bold text-lg mb-2">Comptabilité</h3>
+              <p className="text-gray-600">Taxe de séjour automatique</p>
+              <p className="text-sm text-gray-400 mt-2">Module complet à venir</p>
+            </div>
+
+            <div className="bg-white rounded-xl shadow p-6">
+              <div className="text-3xl mb-2">🔄</div>
+              <h3 className="font-bold text-lg mb-2">Synchronisation</h3>
+              <p className="text-gray-600">Airbnb, Booking.com</p>
+              <p className="text-sm text-gray-400 mt-2">Module complet à venir</p>
+            </div>
+
+            <div 
+              onClick={() => setShowAdmin(true)}
+              className="bg-blue-50 border-2 border-blue-600 rounded-xl shadow p-6 cursor-pointer hover:bg-blue-100 transition-colors"
+            >
+              <div className="text-3xl mb-2">⚙️</div>
+              <h3 className="font-bold text-lg mb-2 text-blue-900">Administration</h3>
+              <p className="text-blue-700">Paramètres de l'application</p>
+              <p className="text-sm text-blue-600 mt-2 font-medium">✅ Module actif - Cliquez ici</p>
+            </div>
+          </div>
+
+          <div className="mt-8 bg-green-50 border border-green-200 rounded-xl p-6">
+            <h3 className="font-bold text-green-900 mb-2">✅ Déploiement réussi !</h3>
+            <p className="text-green-700">
+              Votre application Gîte Master est maintenant en ligne. 
+              Accédez à l'Administration pour personnaliser vos paramètres, gérer vos propriétés et changer votre code PIN.
+            </p>
+          </div>
         </div>
       </div>
     </div>

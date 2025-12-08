@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { Lock, Settings as SettingsIcon } from 'lucide-react';
+import { Lock, Settings as SettingsIcon, LayoutDashboard, Calendar } from 'lucide-react';
 import AdminPage from './components/AdminPage';
 import Dashboard from './components/Dashboard';
+import CalendarModule from './components/CalendarModule';
 import AuthService from './services/AuthService';
+
+type View = 'dashboard' | 'calendar' | 'admin';
 
 function App() {
   const [pin, setPin] = useState('');
   const [isUnlocked, setIsUnlocked] = useState(false);
-  const [showAdmin, setShowAdmin] = useState(false);
+  const [currentView, setCurrentView] = useState<View>('dashboard');
   const [error, setError] = useState(false);
   const [shake, setShake] = useState(false);
 
   useEffect(() => {
-    // Check if already authenticated
     if (AuthService.isAuthenticated()) {
       setIsUnlocked(true);
     }
@@ -23,13 +25,11 @@ function App() {
       const newPin = pin + num;
       setPin(newPin);
       
-      // Check PIN when 4 digits entered
       if (newPin.length === 4) {
         if (AuthService.login(newPin, false)) {
           setIsUnlocked(true);
           setError(false);
         } else {
-          // Wrong PIN - shake and reset
           setError(true);
           setShake(true);
           
@@ -58,9 +58,7 @@ function App() {
               10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
               20%, 40%, 60%, 80% { transform: translateX(10px); }
             }
-            .shake {
-              animation: shake 0.6s;
-            }
+            .shake { animation: shake 0.6s; }
           `}
         </style>
         
@@ -123,10 +121,7 @@ function App() {
             >
               0
             </button>
-            <button 
-              className="h-16 bg-blue-600 text-white rounded-xl transition-colors text-2xl"
-              disabled={shake}
-            >
+            <button className="h-16 bg-blue-600 text-white rounded-xl transition-colors text-2xl" disabled={shake}>
               ✓
             </button>
           </div>
@@ -144,40 +139,59 @@ function App() {
     );
   }
 
-  if (showAdmin) {
-    return (
-      <div>
-        <AdminPage />
-        <button
-          onClick={() => setShowAdmin(false)}
-          className="fixed bottom-8 right-8 px-6 py-3 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-colors"
-        >
-          ← Retour au Dashboard
-        </button>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
+      {/* Header with Navigation */}
       <div className="bg-white border-b border-gray-200 sticky top-0 z-10 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
+          <div className="flex items-center justify-between py-4">
             <h1 className="text-2xl font-bold text-gray-900">📊 Gîte Master</h1>
-            <button
-              onClick={() => setShowAdmin(true)}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2 transition-colors"
-            >
-              <SettingsIcon size={18} />
-              <span className="hidden sm:inline">Administration</span>
-            </button>
+            
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setCurrentView('dashboard')}
+                className={`px-4 py-2 rounded-lg flex items-center gap-2 transition-colors ${
+                  currentView === 'dashboard'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                <LayoutDashboard size={18} />
+                <span className="hidden sm:inline">Dashboard</span>
+              </button>
+              
+              <button
+                onClick={() => setCurrentView('calendar')}
+                className={`px-4 py-2 rounded-lg flex items-center gap-2 transition-colors ${
+                  currentView === 'calendar'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                <Calendar size={18} />
+                <span className="hidden sm:inline">Calendrier</span>
+              </button>
+              
+              <button
+                onClick={() => setCurrentView('admin')}
+                className={`px-4 py-2 rounded-lg flex items-center gap-2 transition-colors ${
+                  currentView === 'admin'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                <SettingsIcon size={18} />
+                <span className="hidden sm:inline">Admin</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Dashboard */}
-      <Dashboard />
+      {/* Content */}
+      {currentView === 'dashboard' && <Dashboard />}
+      {currentView === 'calendar' && <CalendarModule />}
+      {currentView === 'admin' && <AdminPage />}
     </div>
   );
 }

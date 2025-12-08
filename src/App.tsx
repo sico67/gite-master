@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Lock, Settings as SettingsIcon, LayoutDashboard, Calendar } from 'lucide-react';
+import { Lock, LayoutDashboard, Calendar, MessageSquare, DollarSign, RefreshCw, Settings as SettingsIcon } from 'lucide-react';
 import AdminPage from './components/AdminPage';
 import Dashboard from './components/Dashboard';
 import CalendarModule from './components/CalendarModule';
+import MessagingModule from './components/MessagingModule';
+import AccountingModule from './components/AccountingModule';
+import SyncModule from './components/SyncModule';
 import AuthService from './services/AuthService';
 
-type View = 'dashboard' | 'calendar' | 'admin';
+type View = 'dashboard' | 'calendar' | 'messaging' | 'accounting' | 'sync' | 'admin';
 
 function App() {
   const [pin, setPin] = useState('');
@@ -67,7 +70,7 @@ function App() {
             <div className="inline-flex items-center justify-center w-20 h-20 bg-blue-100 rounded-full mb-4">
               <Lock size={40} className="text-blue-600" />
             </div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Gîte Master</h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Gîte Master v2.0</h1>
             <p className="text-gray-600">Entrez votre code PIN</p>
           </div>
 
@@ -139,6 +142,15 @@ function App() {
     );
   }
 
+  const navItems = [
+    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { id: 'calendar', label: 'Calendrier', icon: Calendar },
+    { id: 'messaging', label: 'Messages', icon: MessageSquare },
+    { id: 'accounting', label: 'Comptabilité', icon: DollarSign },
+    { id: 'sync', label: 'Sync', icon: RefreshCw },
+    { id: 'admin', label: 'Admin', icon: SettingsIcon },
+  ];
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header with Navigation */}
@@ -147,51 +159,38 @@ function App() {
           <div className="flex items-center justify-between py-4">
             <h1 className="text-2xl font-bold text-gray-900">📊 Gîte Master</h1>
             
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setCurrentView('dashboard')}
-                className={`px-4 py-2 rounded-lg flex items-center gap-2 transition-colors ${
-                  currentView === 'dashboard'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                <LayoutDashboard size={18} />
-                <span className="hidden sm:inline">Dashboard</span>
-              </button>
-              
-              <button
-                onClick={() => setCurrentView('calendar')}
-                className={`px-4 py-2 rounded-lg flex items-center gap-2 transition-colors ${
-                  currentView === 'calendar'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                <Calendar size={18} />
-                <span className="hidden sm:inline">Calendrier</span>
-              </button>
-              
-              <button
-                onClick={() => setCurrentView('admin')}
-                className={`px-4 py-2 rounded-lg flex items-center gap-2 transition-colors ${
-                  currentView === 'admin'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                <SettingsIcon size={18} />
-                <span className="hidden sm:inline">Admin</span>
-              </button>
-            </div>
+            <nav className="flex items-center gap-1">
+              {navItems.map(item => {
+                const Icon = item.icon;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => setCurrentView(item.id as View)}
+                    className={`px-3 py-2 rounded-lg flex items-center gap-2 transition-colors text-sm ${
+                      currentView === item.id
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    <Icon size={16} />
+                    <span className="hidden sm:inline">{item.label}</span>
+                  </button>
+                );
+              })}
+            </nav>
           </div>
         </div>
       </div>
 
       {/* Content */}
-      {currentView === 'dashboard' && <Dashboard />}
-      {currentView === 'calendar' && <CalendarModule />}
-      {currentView === 'admin' && <AdminPage />}
+      <div className="min-h-[calc(100vh-80px)]">
+        {currentView === 'dashboard' && <Dashboard />}
+        {currentView === 'calendar' && <CalendarModule />}
+        {currentView === 'messaging' && <MessagingModule />}
+        {currentView === 'accounting' && <AccountingModule />}
+        {currentView === 'sync' && <SyncModule />}
+        {currentView === 'admin' && <AdminPage />}
+      </div>
     </div>
   );
 }

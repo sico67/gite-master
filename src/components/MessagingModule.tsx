@@ -41,82 +41,12 @@ interface Template {
 }
 
 const MessagingModule: React.FC = () => {
-  const [selectedConversation, setSelectedConversation] = useState<string | null>('1');
+  const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
   const [messageText, setMessageText] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [showTemplates, setShowTemplates] = useState(false);
 
-  const [conversations, setConversations] = useState<Conversation[]>([
-    {
-      id: '1',
-      guestName: 'Marie Dubois',
-      guestEmail: 'marie.dubois@email.com',
-      propertyName: 'Villa Exemple',
-      bookingDates: '12-19 déc 2025',
-      lastMessage: 'Merci pour les informations !',
-      lastMessageTime: '2025-12-07T14:30:00',
-      unread: 0,
-      status: 'active',
-      messages: [
-        {
-          id: 'm1',
-          text: 'Bonjour, j\'ai une question sur l\'arrivée tardive.',
-          sender: 'guest',
-          timestamp: '2025-12-07T10:15:00'
-        },
-        {
-          id: 'm2',
-          text: 'Bonjour Marie ! Pas de problème, vous pouvez arriver jusqu\'à 22h. Je vous enverrai le code de la boîte à clés par SMS.',
-          sender: 'host',
-          timestamp: '2025-12-07T10:30:00'
-        },
-        {
-          id: 'm3',
-          text: 'Merci pour les informations !',
-          sender: 'guest',
-          timestamp: '2025-12-07T14:30:00'
-        }
-      ]
-    },
-    {
-      id: '2',
-      guestName: 'Jean Martin',
-      guestEmail: 'jean.martin@email.com',
-      propertyName: 'Villa Exemple',
-      bookingDates: '22-28 déc 2025',
-      lastMessage: 'Votre réservation est confirmée !',
-      lastMessageTime: '2025-12-06T16:20:00',
-      unread: 1,
-      status: 'active',
-      messages: [
-        {
-          id: 'm4',
-          text: 'Votre réservation est confirmée ! Au plaisir de vous accueillir.',
-          sender: 'host',
-          timestamp: '2025-12-06T16:20:00'
-        }
-      ]
-    },
-    {
-      id: '3',
-      guestName: 'Sophie Laurent',
-      guestEmail: 'sophie.laurent@email.com',
-      propertyName: 'Villa Exemple',
-      bookingDates: '5-8 déc 2025',
-      lastMessage: 'J\'espère que vous avez passé un excellent séjour !',
-      lastMessageTime: '2025-12-08T11:00:00',
-      unread: 0,
-      status: 'active',
-      messages: [
-        {
-          id: 'm5',
-          text: 'Bonjour Sophie, j\'espère que vous avez passé un excellent séjour ! N\'hésitez pas à laisser un avis.',
-          sender: 'host',
-          timestamp: '2025-12-08T11:00:00'
-        }
-      ]
-    }
-  ]);
+  const [conversations, setConversations] = useState<Conversation[]>([]);
 
   const [templates] = useState<Template[]>([
     {

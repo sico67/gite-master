@@ -45,33 +45,7 @@ const CalendarModule: React.FC = () => {
 
   const loadBookings = () => {
     const savedBookings = DataService.getBookings();
-    if (savedBookings.length > 0) {
-      setBookings(savedBookings);
-    } else {
-      // Données démo initiales
-      const demoBookings = [
-        {
-          id: '1',
-          guestName: 'Marie Dubois',
-          guestEmail: 'marie.dubois@email.com',
-          guestPhone: '+33 6 12 34 56 78',
-          propertyId: 'p1',
-          propertyName: 'Villa Exemple',
-          checkIn: '2025-12-12',
-          checkOut: '2025-12-19',
-          status: 'confirmed' as const,
-          totalPrice: 980,
-          guests: 4,
-          adults: 3,
-          children: 1,
-          notes: 'Arrivée tardive prévue',
-          source: 'manual' as const,
-          createdAt: new Date().toISOString()
-        }
-      ];
-      DataService.saveBookings(demoBookings);
-      setBookings(demoBookings);
-    }
+    setBookings(savedBookings);
   };
 
   const [formData, setFormData] = useState<Partial<Booking>>({

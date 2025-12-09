@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import MonthDetailsModal from './MonthDetailsModal';
+import DataService from '../services/DataService';
 import { 
   TrendingUp, 
   Calendar, 
@@ -45,6 +47,9 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
     avgRating: 4.8,
     ratingChange: 0.2,
   });
+
+  const [showMonthModal, setShowMonthModal] = useState(false);
+  const [selectedMonth, setSelectedMonth] = useState<string>('');
 
   const [upcomingBookings] = useState<Booking[]>([
     {
@@ -98,19 +103,28 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
   ]);
 
   const [revenueData] = useState([
-    { month: 'Jan', revenue: 3200 },
-    { month: 'Fév', revenue: 2800 },
-    { month: 'Mar', revenue: 4100 },
-    { month: 'Avr', revenue: 3900 },
-    { month: 'Mai', revenue: 5200 },
-    { month: 'Juin', revenue: 6800 },
-    { month: 'Juil', revenue: 7500 },
-    { month: 'Août', revenue: 8200 },
-    { month: 'Sep', revenue: 5400 },
-    { month: 'Oct', revenue: 4200 },
-    { month: 'Nov', revenue: 3800 },
-    { month: 'Déc', revenue: 4850 },
+    { month: 'Jan', revenue: 3200, fullDate: '2025-01' },
+    { month: 'Fév', revenue: 2800, fullDate: '2025-02' },
+    { month: 'Mar', revenue: 4100, fullDate: '2025-03' },
+    { month: 'Avr', revenue: 3900, fullDate: '2025-04' },
+    { month: 'Mai', revenue: 5200, fullDate: '2025-05' },
+    { month: 'Juin', revenue: 6800, fullDate: '2025-06' },
+    { month: 'Juil', revenue: 7500, fullDate: '2025-07' },
+    { month: 'Août', revenue: 8200, fullDate: '2025-08' },
+    { month: 'Sep', revenue: 5400, fullDate: '2025-09' },
+    { month: 'Oct', revenue: 4200, fullDate: '2025-10' },
+    { month: 'Nov', revenue: 3800, fullDate: '2025-11' },
+    { month: 'Déc', revenue: 4850, fullDate: '2025-12' },
   ]);
+
+  const getMonthData = (monthStr: string) => {
+    const bookings = DataService.getBookings().filter(b => {
+      const date = new Date(b.checkIn);
+      return date.toISOString().substring(0, 7) === monthStr;
+    });
+    const revenue = bookings.reduce((sum, b) => sum + b.totalPrice, 0);
+    return { bookings, revenue, expenses: [] };
+  };
 
   const maxRevenue = Math.max(...revenueData.map(d => d.revenue));
 
@@ -256,6 +270,10 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
                 <div key={index} className="flex-1 flex flex-col items-center gap-2">
                   <div className="w-full relative group">
                     <div 
+                      onClick={() => {
+                        setSelectedMonth(data.fullDate);
+                        setShowMonthModal(true);
+                      }}
                       className="w-full bg-gradient-to-t from-blue-600 to-blue-400 rounded-t-lg transition-all hover:from-blue-700 hover:to-blue-500 cursor-pointer"
                       style={{ height: `${height}%`, minHeight: '8px' }}
                     />
@@ -379,6 +397,17 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
           <p className="text-sm text-purple-100">Voir les statistiques détaillées</p>
         </button>
       </div>
+
+      {/* Month Details Modal */}
+      {showMonthModal && selectedMonth && (
+        <MonthDetailsModal
+          month={selectedMonth}
+          revenue={getMonthData(selectedMonth).revenue}
+          bookings={getMonthData(selectedMonth).bookings}
+          expenses={getMonthData(selectedMonth).expenses}
+          onClose={() => setShowMonthModal(false)}
+        />
+      )}
     </div>
   );
 };

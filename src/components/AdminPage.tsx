@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Settings, Save, Home, DollarSign, Mail, Palette, Shield, Check, AlertCircle } from 'lucide-react';
+import { Settings, Save, Home, DollarSign, Mail, Palette, Shield, Check, AlertCircle, Star, Link as LinkIcon } from 'lucide-react';
 import ConfigService from '../services/ConfigService';
 import AuthService from '../services/AuthService';
+import DataService from '../services/DataService';
 
-type TabType = 'general' | 'properties' | 'pricing' | 'security';
+type TabType = 'general' | 'properties' | 'pricing' | 'reviews' | 'security';
 
 export const AdminPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('general');
@@ -16,8 +17,13 @@ export const AdminPage: React.FC = () => {
   const [newPin, setNewPin] = useState('');
   const [confirmPin, setConfirmPin] = useState('');
 
+  // Reviews tab
+  const [reviewLinks, setReviewLinks] = useState({ google: '', airbnb: '', booking: '' });
+
   useEffect(() => {
     loadSettings();
+    const links = DataService.getReviewLinks();
+    setReviewLinks(links);
   }, []);
 
   const loadSettings = async () => {
@@ -30,6 +36,7 @@ export const AdminPage: React.FC = () => {
     setIsSaving(true);
     try {
       await ConfigService.saveSettings(settings);
+      DataService.saveReviewLinks(reviewLinks);
       setSaveMessage({ type: 'success', text: 'Paramètres sauvegardés !' });
       setTimeout(() => setSaveMessage(null), 3000);
     } catch (error) {
@@ -100,6 +107,7 @@ export const AdminPage: React.FC = () => {
     { id: 'general', label: 'Général', icon: Settings },
     { id: 'properties', label: 'Propriétés', icon: Home },
     { id: 'pricing', label: 'Tarification', icon: DollarSign },
+    { id: 'reviews', label: 'Liens Avis', icon: Star },
     { id: 'security', label: 'Sécurité', icon: Shield },
   ];
 
@@ -349,6 +357,83 @@ export const AdminPage: React.FC = () => {
                   onChange={(e) => updateSettings('pricing.minimumStay', Number(e.target.value))}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                 />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Reviews Tab */}
+        {activeTab === 'reviews' && (
+          <div className="space-y-6">
+            <div className="bg-white rounded-xl shadow-sm p-6">
+              <h2 className="text-xl font-bold text-gray-900 mb-2 flex items-center gap-2">
+                <Star className="text-yellow-600" />
+                Liens vers vos pages d'avis
+              </h2>
+              <p className="text-sm text-gray-600 mb-6">
+                Configurez les liens vers vos pages d'avis pour les intégrer automatiquement dans vos messages aux clients.
+              </p>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                    <LinkIcon size={16} />
+                    Lien Google Reviews
+                  </label>
+                  <input
+                    type="url"
+                    value={reviewLinks.google}
+                    onChange={(e) => setReviewLinks({ ...reviewLinks, google: e.target.value })}
+                    placeholder="https://g.page/r/YOUR_PLACE_ID/review"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Format: https://g.page/r/[YOUR_PLACE_ID]/review
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                    <LinkIcon size={16} />
+                    Lien Airbnb Reviews
+                  </label>
+                  <input
+                    type="url"
+                    value={reviewLinks.airbnb}
+                    onChange={(e) => setReviewLinks({ ...reviewLinks, airbnb: e.target.value })}
+                    placeholder="https://airbnb.com/rooms/YOUR_LISTING_ID"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Format: https://airbnb.com/rooms/[YOUR_LISTING_ID]
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                    <LinkIcon size={16} />
+                    Lien Booking.com Reviews
+                  </label>
+                  <input
+                    type="url"
+                    value={reviewLinks.booking}
+                    onChange={(e) => setReviewLinks({ ...reviewLinks, booking: e.target.value })}
+                    placeholder="https://booking.com/hotel/YOUR_PROPERTY.html"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Format: https://booking.com/hotel/[YOUR_PROPERTY].html
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+                <h3 className="font-semibold text-blue-900 mb-2">💡 Comment trouver vos liens ?</h3>
+                <ul className="text-sm text-blue-800 space-y-1 list-disc list-inside">
+                  <li><strong>Google:</strong> Google Business Profile → Partager → Copier le lien</li>
+                  <li><strong>Airbnb:</strong> Votre annonce → Copier le lien de la page</li>
+                  <li><strong>Booking:</strong> Extranet → Votre établissement → Lien public</li>
+                </ul>
               </div>
             </div>
           </div>

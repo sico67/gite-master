@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import DataService from '../services/DataService';
+import BookingDetailsModal from './BookingDetailsModal';
 import { 
   ChevronLeft, 
   ChevronRight, 
@@ -34,6 +35,7 @@ interface Booking {
 const CalendarModule: React.FC = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [showModal, setShowModal] = useState(false);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const [bookings, setBookings] = useState<Booking[]>([]);
 
@@ -189,8 +191,24 @@ const CalendarModule: React.FC = () => {
 
   const handleEditBooking = (booking: Booking) => {
     setSelectedBooking(booking);
-    setFormData(booking);
-    setShowModal(true);
+    setShowDetailsModal(true);
+  };
+
+  const handleEditFromDetails = () => {
+    setShowDetailsModal(false);
+    if (selectedBooking) {
+      setFormData(selectedBooking);
+      setShowModal(true);
+    }
+  };
+
+  const handleDeleteFromDetails = () => {
+    if (selectedBooking) {
+      DataService.deleteBooking(selectedBooking.id);
+      loadBookings();
+      setShowDetailsModal(false);
+      setSelectedBooking(null);
+    }
   };
 
   const handleDeleteBooking = (id: string) => {
@@ -585,6 +603,19 @@ const CalendarModule: React.FC = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Modal Détails Réservation */}
+      {showDetailsModal && selectedBooking && (
+        <BookingDetailsModal
+          booking={selectedBooking}
+          onClose={() => {
+            setShowDetailsModal(false);
+            setSelectedBooking(null);
+          }}
+          onEdit={handleEditFromDetails}
+          onDelete={handleDeleteFromDetails}
+        />
       )}
     </div>
   );

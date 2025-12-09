@@ -40,83 +40,36 @@ type ModuleView = 'dashboard' | 'calendar' | 'messaging' | 'accounting' | 'sync'
 
 const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
   const [stats, setStats] = useState({
-    monthRevenue: 4850,
-    monthRevenueChange: 12.5,
-    totalBookings: 18,
-    bookingsChange: 8.3,
-    occupancyRate: 76,
-    occupancyChange: -3.2,
-    avgRating: 4.8,
-    ratingChange: 0.2,
+    monthRevenue: 0,
+    monthRevenueChange: 0,
+    totalBookings: 0,
+    bookingsChange: 0,
+    occupancyRate: 0,
+    occupancyChange: 0,
+    avgRating: 0,
+    ratingChange: 0,
   });
+
+  const [upcomingBookings] = useState<Booking[]>([]);
+
+  const [tasks] = useState<Task[]>([]);
 
   const [showMonthModal, setShowMonthModal] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState<string>('');
 
-  const [upcomingBookings] = useState<Booking[]>([
-    {
-      id: '1',
-      guest: 'Marie Dubois',
-      property: 'Villa Exemple',
-      checkIn: '2025-12-12',
-      checkOut: '2025-12-19',
-      status: 'confirmed',
-      revenue: 980
-    },
-    {
-      id: '2',
-      guest: 'Jean Martin',
-      property: 'Villa Exemple',
-      checkIn: '2025-12-15',
-      checkOut: '2025-12-18',
-      status: 'pending',
-      revenue: 420
-    },
-    {
-      id: '3',
-      guest: 'Sophie Laurent',
-      property: 'Villa Exemple',
-      checkIn: '2025-12-20',
-      checkOut: '2025-12-27',
-      status: 'confirmed',
-      revenue: 1260
-    },
-  ]);
-
-  const [tasks] = useState<Task[]>([
-    {
-      id: '1',
-      title: 'Ménage avant arrivée Marie Dubois',
-      type: 'urgent',
-      dueDate: '2025-12-11'
-    },
-    {
-      id: '2',
-      title: 'Répondre à demande de Jean Martin',
-      type: 'normal',
-      dueDate: '2025-12-10'
-    },
-    {
-      id: '3',
-      title: 'Taxe de séjour à déclarer',
-      type: 'urgent',
-      dueDate: '2025-12-15'
-    },
-  ]);
-
   const [revenueData] = useState([
-    { month: 'Jan', revenue: 3200, fullDate: '2025-01' },
-    { month: 'Fév', revenue: 2800, fullDate: '2025-02' },
-    { month: 'Mar', revenue: 4100, fullDate: '2025-03' },
-    { month: 'Avr', revenue: 3900, fullDate: '2025-04' },
-    { month: 'Mai', revenue: 5200, fullDate: '2025-05' },
-    { month: 'Juin', revenue: 6800, fullDate: '2025-06' },
-    { month: 'Juil', revenue: 7500, fullDate: '2025-07' },
-    { month: 'Août', revenue: 8200, fullDate: '2025-08' },
-    { month: 'Sep', revenue: 5400, fullDate: '2025-09' },
-    { month: 'Oct', revenue: 4200, fullDate: '2025-10' },
-    { month: 'Nov', revenue: 3800, fullDate: '2025-11' },
-    { month: 'Déc', revenue: 4850, fullDate: '2025-12' },
+    { month: 'Jan', revenue: 0, fullDate: '2025-01' },
+    { month: 'Fév', revenue: 0, fullDate: '2025-02' },
+    { month: 'Mar', revenue: 0, fullDate: '2025-03' },
+    { month: 'Avr', revenue: 0, fullDate: '2025-04' },
+    { month: 'Mai', revenue: 0, fullDate: '2025-05' },
+    { month: 'Juin', revenue: 0, fullDate: '2025-06' },
+    { month: 'Juil', revenue: 0, fullDate: '2025-07' },
+    { month: 'Août', revenue: 0, fullDate: '2025-08' },
+    { month: 'Sep', revenue: 0, fullDate: '2025-09' },
+    { month: 'Oct', revenue: 0, fullDate: '2025-10' },
+    { month: 'Nov', revenue: 0, fullDate: '2025-11' },
+    { month: 'Déc', revenue: 0, fullDate: '2025-12' },
   ]);
 
   const getMonthData = (monthStr: string) => {

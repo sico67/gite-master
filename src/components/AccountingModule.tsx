@@ -40,94 +40,9 @@ const AccountingModule: React.FC = () => {
   const [selectedPeriod, setSelectedPeriod] = useState('month');
   const [selectedYear] = useState(2025);
 
-  const [transactions] = useState<Transaction[]>([
-    {
-      id: '1',
-      date: '2025-12-12',
-      type: 'revenue',
-      category: 'Réservation',
-      description: 'Marie Dubois - Villa Exemple',
-      amount: 980,
-      property: 'Villa Exemple',
-      bookingId: 'b1'
-    },
-    {
-      id: '2',
-      date: '2025-12-05',
-      type: 'revenue',
-      category: 'Réservation',
-      description: 'Sophie Laurent - Villa Exemple',
-      amount: 420,
-      property: 'Villa Exemple',
-      bookingId: 'b3'
-    },
-    {
-      id: '3',
-      date: '2025-12-01',
-      type: 'expense',
-      category: 'Ménage',
-      description: 'Service de ménage',
-      amount: -80,
-      property: 'Villa Exemple'
-    },
-    {
-      id: '4',
-      date: '2025-12-03',
-      type: 'expense',
-      category: 'Maintenance',
-      description: 'Réparation plomberie',
-      amount: -150,
-      property: 'Villa Exemple'
-    },
-    {
-      id: '5',
-      date: '2025-12-10',
-      type: 'expense',
-      category: 'Fournitures',
-      description: 'Produits d\'entretien',
-      amount: -45,
-      property: 'Villa Exemple'
-    }
-  ]);
+  const [transactions] = useState<Transaction[]>([]);
 
-  const [touristTaxes] = useState<TouristTax[]>([
-    {
-      bookingId: 'b1',
-      guestName: 'Marie Dubois',
-      property: 'Villa Exemple',
-      checkIn: '2025-12-12',
-      checkOut: '2025-12-19',
-      nights: 7,
-      adults: 2,
-      taxPerNight: 0.80,
-      totalTax: 11.20,
-      status: 'pending'
-    },
-    {
-      bookingId: 'b2',
-      guestName: 'Jean Martin',
-      property: 'Villa Exemple',
-      checkIn: '2025-12-22',
-      checkOut: '2025-12-28',
-      nights: 6,
-      adults: 2,
-      taxPerNight: 0.80,
-      totalTax: 9.60,
-      status: 'pending'
-    },
-    {
-      bookingId: 'b3',
-      guestName: 'Sophie Laurent',
-      property: 'Villa Exemple',
-      checkIn: '2025-12-05',
-      checkOut: '2025-12-08',
-      nights: 3,
-      adults: 3,
-      taxPerNight: 0.80,
-      totalTax: 7.20,
-      status: 'declared'
-    }
-  ]);
+  const [touristTaxes] = useState<TouristTax[]>([]);
 
   const totalRevenue = transactions
     .filter(t => t.type === 'revenue')

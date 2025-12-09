@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Lock, LayoutDashboard, Calendar, MessageSquare, DollarSign, RefreshCw, Settings as SettingsIcon } from 'lucide-react';
+import { Lock, LayoutDashboard, Calendar, MessageSquare, DollarSign, RefreshCw, Settings as SettingsIcon, HelpCircle } from 'lucide-react';
 import LoginPage from './components/LoginPage';
+import HelpGuide from './components/HelpGuide';
 import AdminPage from './components/AdminPage';
 import Dashboard from './components/Dashboard';
 import CalendarModule from './components/CalendarModule';
@@ -17,6 +18,7 @@ type View = 'dashboard' | 'calendar' | 'messaging' | 'accounting' | 'sync' | 'cl
 function App() {
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [currentView, setCurrentView] = useState<View>('dashboard');
+  const [showHelp, setShowHelp] = useState(false);
 
   useEffect(() => {
     if (AuthService.isAuthenticated()) {
@@ -54,7 +56,16 @@ function App() {
           <div className="flex items-center justify-between py-4">
             <h1 className="text-2xl font-bold text-gray-900">📊 Gîte Master</h1>
             
-            <nav className="flex items-center gap-1">
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setShowHelp(true)}
+                className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:shadow-lg flex items-center gap-2 transition-all"
+              >
+                <HelpCircle size={18} />
+                <span className="hidden sm:inline font-medium">Aide</span>
+              </button>
+              
+              <nav className="flex items-center gap-1">
               {navItems.map(item => {
                 const Icon = item.icon;
                 return (
@@ -73,6 +84,7 @@ function App() {
                 );
               })}
             </nav>
+            </div>
           </div>
         </div>
       </div>
@@ -89,6 +101,9 @@ function App() {
         {currentView === 'sync' && <SyncModule />}
         {currentView === 'admin' && <AdminPage />}
       </div>
+
+      {/* Help Guide Modal */}
+      {showHelp && <HelpGuide onClose={() => setShowHelp(false)} />}
     </div>
   );
 }

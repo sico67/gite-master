@@ -76,7 +76,7 @@ class AuthService {
       this.session = {
         isAuthenticated: true,
         lastActivity: Date.now(),
-        rememberMe: true,
+        rememberMe: false, // Session temporaire
       };
       this.saveSession();
       return true;

@@ -54,34 +54,40 @@ function App() {
     <div className="min-h-screen bg-gray-50">
       {/* Header with Navigation */}
       <div className="bg-white border-b border-gray-200 sticky top-0 z-10 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between py-4 gap-4">
-            <h1 className="text-2xl font-bold text-gray-900 flex-shrink-0">📊 Gîte Master</h1>
+        <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between py-3 gap-2">
+            {/* Logo compact sur mobile */}
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 flex-shrink-0">
+              <span className="hidden sm:inline">📊 Gîte Master</span>
+              <span className="sm:hidden">📊 GM</span>
+            </h1>
             
-            <div className="flex items-center gap-3 flex-1 justify-end">
+            <div className="flex items-center gap-2 flex-1 justify-end overflow-hidden">
+              {/* Bouton aide compact */}
               <button
                 onClick={() => setShowHelp(true)}
-                className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:shadow-lg flex items-center gap-2 transition-all flex-shrink-0"
+                className="px-3 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:shadow-lg flex items-center gap-1 transition-all flex-shrink-0"
               >
-                <HelpCircle size={18} />
-                <span className="hidden sm:inline font-medium">Aide</span>
+                <HelpCircle size={16} />
+                <span className="hidden lg:inline text-sm font-medium">Aide</span>
               </button>
               
-              <nav className="flex items-center gap-1 overflow-x-auto scrollbar-hide" style={{ maxWidth: 'calc(100vw - 280px)' }}>
+              {/* Navigation scrollable */}
+              <nav className="flex items-center gap-1 overflow-x-auto scrollbar-hide flex-1" style={{ maxWidth: 'calc(100vw - 140px)' }}>
               {navItems.map(item => {
                 const Icon = item.icon;
                 return (
                   <button
                     key={item.id}
                     onClick={() => setCurrentView(item.id as View)}
-                    className={`px-3 py-2 rounded-lg flex items-center gap-2 transition-colors text-sm ${
+                    className={`px-2 sm:px-3 py-2 rounded-lg flex items-center gap-1 sm:gap-2 transition-colors text-xs sm:text-sm flex-shrink-0 ${
                       currentView === item.id
                         ? 'bg-blue-600 text-white'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                   >
-                    <Icon size={16} />
-                    <span className="hidden sm:inline">{item.label}</span>
+                    <Icon size={14} className="sm:w-4 sm:h-4" />
+                    <span className="hidden md:inline">{item.label}</span>
                   </button>
                 );
               })}

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import DataService from '../services/DataService';
 import { Sparkles, Plus, Calendar, Clock, User, Check, X, AlertCircle, CheckSquare } from 'lucide-react';
 
 interface CleaningTask {
@@ -51,30 +52,40 @@ const CleaningModule: React.FC = () => {
   }, []);
 
   const loadTasks = () => {
-    const saved = localStorage.getItem('gitemaster_cleaning');
-    if (saved) {
-      setTasks(JSON.parse(saved));
-    }
+    const loadedTasks = DataService.getCleaningTasks();
+    setTasks(loadedTasks);
   };
 
-  const saveTasks = (newTasks: CleaningTask[]) => {
-    localStorage.setItem('gitemaster_cleaning', JSON.stringify(newTasks));
-    setTasks(newTasks);
+  const createTaskFromBooking = (booking: any): CleaningTask => {
+    // Pas utilisé - création automatique par DataService
+    return {} as CleaningTask;
   };
 
   const handleCreateTask = () => {
-    if (!formData.guestName || !formData.scheduledDate) {
-      alert('Veuillez remplir les champs obligatoires');
+    const bookings = DataService.getBookings();
+    const upcomingCheckouts = bookings.filter(b => {
+      const checkout = new Date(b.checkOut);
+      const today = new Date();
+      return checkout >= today && b.status === 'confirmed';
+    });
+
+    if (upcomingCheckouts.length === 0) {
+      alert('Aucune réservation à venir pour créer une tâche de ménage');
       return;
     }
 
+    // Création manuelle depuis une réservation existante
+    const booking = upcomingCheckouts[0];
+    const checkOutDate = new Date(booking.checkOut);
+    checkOutDate.setHours(14, 0, 0, 0);
+    
     const newTask: CleaningTask = {
       id: `clean_${Date.now()}`,
-      bookingId: `booking_${Date.now()}`,
-      guestName: formData.guestName,
-      propertyName: formData.propertyName,
-      scheduledDate: formData.scheduledDate,
-      scheduledTime: formData.scheduledTime,
+      bookingId: booking.id,
+      guestName: booking.guestName,
+      propertyName: booking.propertyName,
+      scheduledDate: checkOutDate.toISOString().split('T')[0],
+      scheduledTime: '14:00',
       status: formData.assignedTo ? 'assigned' : 'pending',
       assignedTo: formData.assignedTo || undefined,
       assignedPhone: formData.assignedPhone || undefined,
@@ -82,19 +93,10 @@ const CleaningModule: React.FC = () => {
       checklist: DEFAULT_CHECKLIST.map(item => ({ ...item })),
       notes: formData.notes || undefined
     };
-
-    saveTasks([...tasks, newTask]);
+    
+    DataService.addCleaningTask(newTask);
+    loadTasks();
     setShowModal(false);
-    setFormData({
-      guestName: '',
-      propertyName: 'Villa Exemple',
-      scheduledDate: '',
-      scheduledTime: '14:00',
-      assignedTo: '',
-      assignedPhone: '',
-      cost: 80,
-      notes: ''
-    });
   };
 
   const handleUpdateStatus = (taskId: string, newStatus: CleaningTask['status']) => {

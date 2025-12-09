@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import DataService from '../services/DataService';
 import { 
   ChevronLeft, 
   ChevronRight, 
@@ -34,48 +35,42 @@ const CalendarModule: React.FC = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [showModal, setShowModal] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
-  const [bookings, setBookings] = useState<Booking[]>([
-    {
-      id: '1',
-      guestName: 'Marie Dubois',
-      guestEmail: 'marie.dubois@email.com',
-      guestPhone: '+33 6 12 34 56 78',
-      propertyId: 'p1',
-      propertyName: 'Villa Exemple',
-      checkIn: '2025-12-12',
-      checkOut: '2025-12-19',
-      status: 'confirmed',
-      totalPrice: 980,
-      guests: 4,
-      notes: 'Arrivée tardive prévue'
-    },
-    {
-      id: '2',
-      guestName: 'Jean Martin',
-      guestEmail: 'jean.martin@email.com',
-      guestPhone: '+33 6 98 76 54 32',
-      propertyId: 'p1',
-      propertyName: 'Villa Exemple',
-      checkIn: '2025-12-22',
-      checkOut: '2025-12-28',
-      status: 'pending',
-      totalPrice: 840,
-      guests: 2
-    },
-    {
-      id: '3',
-      guestName: 'Sophie Laurent',
-      guestEmail: 'sophie.laurent@email.com',
-      guestPhone: '+33 6 55 44 33 22',
-      propertyId: 'p1',
-      propertyName: 'Villa Exemple',
-      checkIn: '2025-12-05',
-      checkOut: '2025-12-08',
-      status: 'confirmed',
-      totalPrice: 420,
-      guests: 3
+  const [bookings, setBookings] = useState<Booking[]>([]);
+
+  useEffect(() => {
+    loadBookings();
+  }, []);
+
+  const loadBookings = () => {
+    const savedBookings = DataService.getBookings();
+    if (savedBookings.length > 0) {
+      setBookings(savedBookings);
+    } else {
+      // Données démo initiales
+      const demoBookings = [
+        {
+          id: '1',
+          guestName: 'Marie Dubois',
+          guestEmail: 'marie.dubois@email.com',
+          guestPhone: '+33 6 12 34 56 78',
+          propertyId: 'p1',
+          propertyName: 'Villa Exemple',
+          checkIn: '2025-12-12',
+          checkOut: '2025-12-19',
+          status: 'confirmed' as const,
+          totalPrice: 980,
+          guests: 4,
+          adults: 3,
+          children: 1,
+          notes: 'Arrivée tardive prévue',
+          source: 'manual' as const,
+          createdAt: new Date().toISOString()
+        }
+      ];
+      DataService.saveBookings(demoBookings);
+      setBookings(demoBookings);
     }
-  ]);
+  };
 
   const [formData, setFormData] = useState<Partial<Booking>>({
     guestName: '',
@@ -200,7 +195,8 @@ const CalendarModule: React.FC = () => {
 
   const handleDeleteBooking = (id: string) => {
     if (confirm('Êtes-vous sûr de vouloir supprimer cette réservation ?')) {
-      setBookings(bookings.filter(b => b.id !== id));
+      DataService.deleteBooking(id);
+      loadBookings();
     }
   };
 
@@ -212,16 +208,26 @@ const CalendarModule: React.FC = () => {
 
     if (selectedBooking) {
       // Edit existing
-      setBookings(bookings.map(b => 
-        b.id === selectedBooking.id ? { ...formData, id: b.id } as Booking : b
-      ));
+      const updated = { ...formData, id: selectedBooking.id } as Booking;
+      DataService.updateBooking(selectedBooking.id, updated);
+      loadBookings();
     } else {
       // Add new
       const newBooking: Booking = {
         ...formData,
         id: Date.now().toString(),
+        source: 'manual',
+        adults: formData.guests || 2,
+        children: 0,
+        createdAt: new Date().toISOString()
       } as Booking;
-      setBookings([...bookings, newBooking]);
+      
+      DataService.addBooking(newBooking, newBooking.status === 'confirmed');
+      loadBookings();
+      
+      if (newBooking.status === 'confirmed') {
+        alert('✅ Réservation créée !\n🧹 Tâche de ménage programmée automatiquement');
+      }
     }
 
     setShowModal(false);
@@ -246,8 +252,21 @@ const CalendarModule: React.FC = () => {
     days.push(
       <div
         key={day}
-        className={`h-24 md:h-32 border border-gray-200 p-1 md:p-2 overflow-hidden hover:bg-gray-50 transition-colors ${
+        onClick={() => {
+          if (dayBookings.length === 0) {
+            const dateStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            setFormData({
+              ...formData,
+              checkIn: dateStr,
+              checkOut: dateStr
+            });
+            setShowModal(true);
+          }
+        }}
+        className={`h-24 md:h-32 border border-gray-200 p-1 md:p-2 overflow-hidden transition-colors ${
           isToday ? 'bg-blue-50 border-blue-400' : 'bg-white'
+        } ${
+          dayBookings.length === 0 ? 'cursor-pointer hover:bg-blue-50' : 'hover:bg-gray-50'
         }`}
       >
         <div className={`text-sm font-semibold mb-1 ${isToday ? 'text-blue-600' : 'text-gray-700'}`}>

@@ -199,7 +199,16 @@ const AccountingModule: React.FC = () => {
 
       {/* KPIs */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+        <div 
+          onClick={() => {
+            const revenueList = transactions
+              .filter(t => t.type === 'revenue')
+              .map(t => `${new Date(t.date).toLocaleDateString('fr-FR')}: ${t.description} - ${t.amount}€`)
+              .join('\n');
+            alert(`💰 REVENUS TOTAUX\n\n${totalRevenue.toLocaleString()}€\n\nDétails:\n${revenueList}`);
+          }}
+          className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 cursor-pointer hover:shadow-md transition-all"
+        >
           <div className="flex items-center justify-between mb-4">
             <div className="p-2 bg-green-100 rounded-lg">
               <TrendingUp className="text-green-600" size={24} />
@@ -209,7 +218,16 @@ const AccountingModule: React.FC = () => {
           <p className="text-sm text-gray-600 mt-1">Revenus totaux</p>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+        <div 
+          onClick={() => {
+            const expenseList = transactions
+              .filter(t => t.type === 'expense')
+              .map(t => `${new Date(t.date).toLocaleDateString('fr-FR')}: ${t.description} - ${Math.abs(t.amount)}€`)
+              .join('\n');
+            alert(`📉 DÉPENSES TOTALES\n\n${totalExpenses.toLocaleString()}€\n\nDétails:\n${expenseList}`);
+          }}
+          className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 cursor-pointer hover:shadow-md transition-all"
+        >
           <div className="flex items-center justify-between mb-4">
             <div className="p-2 bg-red-100 rounded-lg">
               <TrendingDown className="text-red-600" size={24} />
@@ -219,7 +237,12 @@ const AccountingModule: React.FC = () => {
           <p className="text-sm text-gray-600 mt-1">Dépenses totales</p>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+        <div 
+          onClick={() => {
+            alert(`💵 BÉNÉFICE NET\n\nRevenus: ${totalRevenue.toLocaleString()}€\nDépenses: ${totalExpenses.toLocaleString()}€\n\nNet: ${netProfit.toLocaleString()}€\n\nMarge: ${((netProfit / totalRevenue) * 100).toFixed(1)}%`);
+          }}
+          className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 cursor-pointer hover:shadow-md transition-all"
+        >
           <div className="flex items-center justify-between mb-4">
             <div className="p-2 bg-blue-100 rounded-lg">
               <DollarSign className="text-blue-600" size={24} />
@@ -231,7 +254,15 @@ const AccountingModule: React.FC = () => {
           <p className="text-sm text-gray-600 mt-1">Bénéfice net</p>
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+        <div 
+          onClick={() => {
+            const taxList = touristTaxes
+              .map(t => `${t.guestName} (${t.nights}n × ${t.adults}p): ${t.totalTax.toFixed(2)}€ - ${getStatusText(t.status)}`)
+              .join('\n');
+            alert(`🏛️ TAXE DE SÉJOUR\n\nTotal: ${totalTouristTax.toFixed(2)}€\nÀ déclarer: ${pendingTax.toFixed(2)}€\n\nDétails:\n${taxList}`);
+          }}
+          className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 cursor-pointer hover:shadow-md transition-all"
+        >
           <div className="flex items-center justify-between mb-4">
             <div className="p-2 bg-purple-100 rounded-lg">
               <Building2 className="text-purple-600" size={24} />
@@ -251,7 +282,14 @@ const AccountingModule: React.FC = () => {
             {transactions.map(transaction => (
               <div
                 key={transaction.id}
-                className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                onClick={() => {
+                  if (transaction.bookingId) {
+                    alert(`Ouvrir réservation ${transaction.bookingId} - ${transaction.description}`);
+                  } else {
+                    alert(`Détails: ${transaction.description}\nMontant: ${transaction.amount}€\nDate: ${new Date(transaction.date).toLocaleDateString('fr-FR')}`);
+                  }
+                }}
+                className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer hover:shadow-md"
               >
                 <div className="flex items-center gap-3">
                   <div className={`p-2 rounded-lg ${
@@ -284,7 +322,17 @@ const AccountingModule: React.FC = () => {
           
           <div className="space-y-4">
             {categories.map(category => (
-              <div key={category.name}>
+              <div 
+                key={category.name}
+                onClick={() => {
+                  const categoryTransactions = transactions
+                    .filter(t => t.category === category.name)
+                    .map(t => `${t.description}: ${t.amount}€`)
+                    .join('\n');
+                  alert(`${category.name}\nTotal: ${category.amount}€\n\nDétails:\n${categoryTransactions}`);
+                }}
+                className="cursor-pointer hover:bg-gray-50 p-3 rounded-lg transition-all"
+              >
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-sm font-medium text-gray-700">{category.name}</span>
                   <span className="text-sm font-bold text-gray-900">{category.amount}€</span>
@@ -350,7 +398,13 @@ const AccountingModule: React.FC = () => {
             </thead>
             <tbody>
               {touristTaxes.map(tax => (
-                <tr key={tax.bookingId} className="border-b border-gray-100 hover:bg-gray-50">
+                <tr 
+                  key={tax.bookingId} 
+                  onClick={() => {
+                    alert(`Taxe de séjour\n\nClient: ${tax.guestName}\nPropriété: ${tax.property}\nArrivée: ${new Date(tax.checkIn).toLocaleDateString('fr-FR')}\nDépart: ${new Date(tax.checkOut).toLocaleDateString('fr-FR')}\nNuitées: ${tax.nights}\nAdultes: ${tax.adults}\nTarif: ${tax.taxPerNight}€/nuit\nTotal: ${tax.totalTax}€\nStatut: ${getStatusText(tax.status)}`);
+                  }}
+                  className="border-b border-gray-100 hover:bg-gray-50 cursor-pointer"
+                >
                   <td className="py-4 px-4">
                     <div>
                       <p className="font-medium text-gray-900">{tax.guestName}</p>

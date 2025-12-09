@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Settings, Save, Home, DollarSign, Mail, Palette, Shield, Check, AlertCircle, Star, Link as LinkIcon } from 'lucide-react';
+import { Settings, Save, Home, DollarSign, Mail, Palette, Shield, Check, AlertCircle, Star, Link as LinkIcon, Key, Send } from 'lucide-react';
 import ConfigService from '../services/ConfigService';
 import AuthService from '../services/AuthService';
 import DataService from '../services/DataService';
+import EmailService from '../services/EmailService';
+import SMSService from '../services/SMSService';
 
-type TabType = 'general' | 'properties' | 'pricing' | 'reviews' | 'security';
+type TabType = 'general' | 'properties' | 'pricing' | 'reviews' | 'api' | 'security';
 
 export const AdminPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('general');
@@ -20,10 +22,30 @@ export const AdminPage: React.FC = () => {
   // Reviews tab
   const [reviewLinks, setReviewLinks] = useState({ google: '', airbnb: '', booking: '' });
 
+  // API tab
+  const [apiConfig, setApiConfig] = useState({
+    sendgridKey: '',
+    fromEmail: '',
+    fromName: '',
+    twilioSid: '',
+    twilioToken: '',
+    twilioPhone: ''
+  });
+
   useEffect(() => {
     loadSettings();
     const links = DataService.getReviewLinks();
     setReviewLinks(links);
+    
+    // Charger config API
+    setApiConfig({
+      sendgridKey: localStorage.getItem('sendgrid_api_key') || '',
+      fromEmail: localStorage.getItem('from_email') || '',
+      fromName: localStorage.getItem('from_name') || '',
+      twilioSid: localStorage.getItem('twilio_account_sid') || '',
+      twilioToken: localStorage.getItem('twilio_auth_token') || '',
+      twilioPhone: localStorage.getItem('twilio_from_phone') || ''
+    });
   }, []);
 
   const loadSettings = async () => {
@@ -37,6 +59,12 @@ export const AdminPage: React.FC = () => {
     try {
       await ConfigService.saveSettings(settings);
       DataService.saveReviewLinks(reviewLinks);
+      
+      // Sauvegarder config API
+      EmailService.setApiKey(apiConfig.sendgridKey);
+      EmailService.setFromEmail(apiConfig.fromEmail, apiConfig.fromName);
+      SMSService.setCredentials(apiConfig.twilioSid, apiConfig.twilioToken, apiConfig.twilioPhone);
+      
       setSaveMessage({ type: 'success', text: 'Paramètres sauvegardés !' });
       setTimeout(() => setSaveMessage(null), 3000);
     } catch (error) {
@@ -108,6 +136,7 @@ export const AdminPage: React.FC = () => {
     { id: 'properties', label: 'Propriétés', icon: Home },
     { id: 'pricing', label: 'Tarification', icon: DollarSign },
     { id: 'reviews', label: 'Liens Avis', icon: Star },
+    { id: 'api', label: 'API & Envois', icon: Send },
     { id: 'security', label: 'Sécurité', icon: Shield },
   ];
 
@@ -435,6 +464,167 @@ export const AdminPage: React.FC = () => {
                   <li><strong>Booking:</strong> Extranet → Votre établissement → Lien public</li>
                 </ul>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* API Tab */}
+        {activeTab === 'api' && (
+          <div className="space-y-6">
+            {/* SendGrid */}
+            <div className="bg-white rounded-xl shadow-sm p-6">
+              <h2 className="text-xl font-bold text-gray-900 mb-2 flex items-center gap-2">
+                <Mail className="text-blue-600" />
+                SendGrid - Emails automatiques
+              </h2>
+              <p className="text-sm text-gray-600 mb-6">
+                Configurez SendGrid pour envoyer des emails automatiques. <a href="https://sendgrid.com" target="_blank" className="text-blue-600 hover:underline">Créer un compte gratuit →</a>
+              </p>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                    <Key size={16} />
+                    API Key SendGrid
+                  </label>
+                  <input
+                    type="password"
+                    value={apiConfig.sendgridKey}
+                    onChange={(e) => setApiConfig({ ...apiConfig, sendgridKey: e.target.value })}
+                    placeholder="SG.xxxxxxxxxxxxxxxxxxx"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-mono text-sm"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    SendGrid → Settings → API Keys → Create API Key
+                  </p>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Email expéditeur</label>
+                    <input
+                      type="email"
+                      value={apiConfig.fromEmail}
+                      onChange={(e) => setApiConfig({ ...apiConfig, fromEmail: e.target.value })}
+                      placeholder="noreply@votregite.com"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Nom expéditeur</label>
+                    <input
+                      type="text"
+                      value={apiConfig.fromName}
+                      onChange={(e) => setApiConfig({ ...apiConfig, fromName: e.target.value })}
+                      placeholder="Villa Exemple"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+
+                <div className="p-3 bg-blue-50 rounded-lg text-sm">
+                  <p className="font-medium text-blue-900">💡 Plan gratuit SendGrid :</p>
+                  <p className="text-blue-800 mt-1">100 emails/jour gratuitement - Parfait pour débuter !</p>
+                </div>
+
+                <div className={`p-3 rounded-lg flex items-center gap-2 ${
+                  EmailService.isConfigured() ? 'bg-green-50 text-green-800' : 'bg-yellow-50 text-yellow-800'
+                }`}>
+                  {EmailService.isConfigured() ? (
+                    <>
+                      <CheckCircle size={18} />
+                      <span className="font-medium">✅ SendGrid configuré</span>
+                    </>
+                  ) : (
+                    <>
+                      <AlertCircle size={18} />
+                      <span className="font-medium">⚠️ SendGrid non configuré (mode simulation)</span>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Twilio */}
+            <div className="bg-white rounded-xl shadow-sm p-6">
+              <h2 className="text-xl font-bold text-gray-900 mb-2 flex items-center gap-2">
+                <Send className="text-green-600" />
+                Twilio - SMS automatiques (Optionnel)
+              </h2>
+              <p className="text-sm text-gray-600 mb-6">
+                Configurez Twilio pour envoyer des SMS. <a href="https://twilio.com" target="_blank" className="text-blue-600 hover:underline">Créer un compte →</a>
+              </p>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Account SID</label>
+                  <input
+                    type="password"
+                    value={apiConfig.twilioSid}
+                    onChange={(e) => setApiConfig({ ...apiConfig, twilioSid: e.target.value })}
+                    placeholder="ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-mono text-sm"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Auth Token</label>
+                  <input
+                    type="password"
+                    value={apiConfig.twilioToken}
+                    onChange={(e) => setApiConfig({ ...apiConfig, twilioToken: e.target.value })}
+                    placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-mono text-sm"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Numéro Twilio</label>
+                  <input
+                    type="tel"
+                    value={apiConfig.twilioPhone}
+                    onChange={(e) => setApiConfig({ ...apiConfig, twilioPhone: e.target.value })}
+                    placeholder="+33xxxxxxxxx"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Format international (ex: +33612345678)
+                  </p>
+                </div>
+
+                <div className="p-3 bg-blue-50 rounded-lg text-sm">
+                  <p className="font-medium text-blue-900">💡 Crédit gratuit Twilio :</p>
+                  <p className="text-blue-800 mt-1">10€ offerts à l'inscription (~200 SMS)</p>
+                  <p className="text-blue-800">Ensuite ~0,05€/SMS</p>
+                </div>
+
+                <div className={`p-3 rounded-lg flex items-center gap-2 ${
+                  SMSService.isConfigured() ? 'bg-green-50 text-green-800' : 'bg-yellow-50 text-yellow-800'
+                }`}>
+                  {SMSService.isConfigured() ? (
+                    <>
+                      <CheckCircle size={18} />
+                      <span className="font-medium">✅ Twilio configuré</span>
+                    </>
+                  ) : (
+                    <>
+                      <AlertCircle size={18} />
+                      <span className="font-medium">ℹ️ Twilio non configuré (optionnel)</span>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl p-6 border-2 border-purple-200">
+              <h3 className="font-bold text-purple-900 mb-3">🚀 Fonctionnement des envois automatiques</h3>
+              <ul className="space-y-2 text-sm text-purple-800">
+                <li>✅ <strong>Sans configuration :</strong> Mode simulation (console.log)</li>
+                <li>✅ <strong>SendGrid configuré :</strong> Emails envoyés automatiquement</li>
+                <li>✅ <strong>Twilio configuré :</strong> SMS envoyés automatiquement</li>
+                <li>✅ <strong>Déclencheurs :</strong> Réservation, J-3, J-0, J+1</li>
+              </ul>
             </div>
           </div>
         )}

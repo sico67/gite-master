@@ -36,6 +36,8 @@ interface DashboardProps {
   onNavigate: (view: 'dashboard' | 'calendar' | 'messaging' | 'accounting' | 'sync' | 'cleaning' | 'automation' | 'guide' | 'admin') => void;
 }
 
+type ModuleView = 'dashboard' | 'calendar' | 'messaging' | 'accounting' | 'sync' | 'cleaning' | 'automation' | 'guide' | 'admin';
+
 const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
   const [stats, setStats] = useState({
     monthRevenue: 4850,
@@ -301,7 +303,8 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
               return (
                 <div 
                   key={task.id}
-                  className={`p-4 rounded-lg border-l-4 ${
+                  onClick={() => onNavigate('cleaning')}
+                  className={`p-4 rounded-lg border-l-4 cursor-pointer hover:shadow-md transition-shadow ${
                     task.type === 'urgent' 
                       ? 'bg-red-50 border-red-500' 
                       : 'bg-blue-50 border-blue-500'
@@ -351,7 +354,11 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
               </thead>
               <tbody>
                 {upcomingBookings.map(booking => (
-                  <tr key={booking.id} className="border-b border-gray-100 hover:bg-gray-50">
+                  <tr 
+                    key={booking.id} 
+                    onClick={() => onNavigate('calendar')}
+                    className="border-b border-gray-100 hover:bg-gray-50 cursor-pointer"
+                  >
                     <td className="py-4 px-4">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center text-white font-bold">

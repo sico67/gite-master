@@ -5,6 +5,7 @@ import AuthService from '../services/AuthService';
 import DataService from '../services/DataService';
 import EmailService from '../services/EmailService';
 import SMSService from '../services/SMSService';
+import PropertyManager from './PropertyManager';
 
 type TabType = 'general' | 'properties' | 'pricing' | 'reviews' | 'api' | 'security';
 
@@ -269,34 +270,11 @@ export const AdminPage: React.FC = () => {
 
         {/* Properties Tab */}
         {activeTab === 'properties' && (
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Mes Propriétés</h2>
-            
-            <div className="space-y-4">
-              {settings.properties.map((property: any) => (
-                <div key={property.id} className="border border-gray-200 rounded-lg p-4">
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Nom</label>
-                      <input
-                        type="text"
-                        value={property.name}
-                        onChange={(e) => {
-                          const updated = settings.properties.map((p: any) =>
-                            p.id === property.id ? { ...p, name: e.target.value } : p
-                          );
-                          updateSettings('properties', updated);
-                        }}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Ville</label>
-                      <input
-                        type="text"
-                        value={property.city}
-                        onChange={(e) => {
+          <PropertyManager />
+        )}
+
+        {/* Pricing Tab */}
+        {activeTab === 'pricing' && (
                           const updated = settings.properties.map((p: any) =>
                             p.id === property.id ? { ...p, city: e.target.value } : p
                           );

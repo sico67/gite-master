@@ -6,9 +6,10 @@ import CalendarModule from './components/CalendarModule';
 import MessagingModule from './components/MessagingModule';
 import AccountingModule from './components/AccountingModule';
 import SyncModule from './components/SyncModule';
+import CleaningModule from './components/CleaningModule';
 import AuthService from './services/AuthService';
 
-type View = 'dashboard' | 'calendar' | 'messaging' | 'accounting' | 'sync' | 'admin';
+type View = 'dashboard' | 'calendar' | 'messaging' | 'accounting' | 'sync' | 'cleaning' | 'admin';
 
 function App() {
   const [pin, setPin] = useState('');
@@ -146,7 +147,8 @@ function App() {
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'calendar', label: 'Calendrier', icon: Calendar },
     { id: 'messaging', label: 'Messages', icon: MessageSquare },
-    { id: 'accounting', label: 'Comptabilité', icon: DollarSign },
+    { id: 'cleaning', label: 'Ménage', icon: LayoutDashboard },
+    { id: 'accounting', label: 'Compta', icon: DollarSign },
     { id: 'sync', label: 'Sync', icon: RefreshCw },
     { id: 'admin', label: 'Admin', icon: SettingsIcon },
   ];
@@ -187,6 +189,7 @@ function App() {
         {currentView === 'dashboard' && <Dashboard />}
         {currentView === 'calendar' && <CalendarModule />}
         {currentView === 'messaging' && <MessagingModule />}
+        {currentView === 'cleaning' && <CleaningModule />}
         {currentView === 'accounting' && <AccountingModule />}
         {currentView === 'sync' && <SyncModule />}
         {currentView === 'admin' && <AdminPage />}

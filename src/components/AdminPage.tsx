@@ -564,62 +564,49 @@ export const AdminPage: React.FC = () => {
         {activeTab === 'security' && (
           <div className="space-y-6">
             <div className="bg-white rounded-xl shadow-sm p-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">Modifier le code PIN</h2>
+              <h2 className="text-xl font-bold text-gray-900 mb-4">🔐 Identifiants de connexion</h2>
+              <p className="text-sm text-gray-600 mb-6">
+                Modifiez vos identifiants pour sécuriser l'accès à l'application.
+              </p>
               
-              <form onSubmit={handleUpdatePin} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Code PIN actuel</label>
-                  <input
-                    type="password"
-                    value={currentPin}
-                    onChange={(e) => setCurrentPin(e.target.value.replace(/\D/g, '').slice(0, 4))}
-                    maxLength={4}
-                    placeholder="••••"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-mono text-2xl text-center"
-                    required
-                  />
+              <div className="space-y-4">
+                <div className="bg-blue-50 border-l-4 border-blue-400 p-4 rounded">
+                  <p className="font-medium text-blue-900 mb-1">Identifiants actuels :</p>
+                  <p className="text-sm text-blue-800">👤 Username: <code className="font-mono bg-white px-2 py-1 rounded">admin</code></p>
+                  <p className="text-sm text-blue-800">🔑 Password: <code className="font-mono bg-white px-2 py-1 rounded">admin123</code></p>
                 </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Nouveau code PIN (4 chiffres)</label>
-                  <input
-                    type="password"
-                    value={newPin}
-                    onChange={(e) => setNewPin(e.target.value.replace(/\D/g, '').slice(0, 4))}
-                    maxLength={4}
-                    placeholder="••••"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-mono text-2xl text-center"
-                    required
-                  />
+
+                <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
+                  <p className="font-bold text-yellow-900 mb-2">⚠️ Prochaine version</p>
+                  <p className="text-sm text-yellow-800">
+                    La modification des identifiants sera disponible dans la prochaine mise à jour avec authentification sécurisée.
+                  </p>
                 </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Confirmer le nouveau PIN</label>
-                  <input
-                    type="password"
-                    value={confirmPin}
-                    onChange={(e) => setConfirmPin(e.target.value.replace(/\D/g, '').slice(0, 4))}
-                    maxLength={4}
-                    placeholder="••••"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-mono text-2xl text-center"
-                    required
-                  />
+
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <p className="text-sm text-gray-700 mb-3"><strong>Pour l'instant, protégez votre accès en :</strong></p>
+                  <ul className="space-y-2 text-sm text-gray-700">
+                    <li className="flex items-start gap-2">
+                      <span>🔒</span>
+                      <span>Ne partageant pas vos identifiants</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span>💻</span>
+                      <span>Utilisant un navigateur privé sur ordinateurs partagés</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span>📱</span>
+                      <span>Activant le verrouillage de votre appareil</span>
+                    </li>
+                  </ul>
                 </div>
-                
-                <button
-                  type="submit"
-                  className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-center gap-2 transition-colors font-medium"
-                >
-                  <Shield size={18} />
-                  Modifier le code PIN
-                </button>
-              </form>
+              </div>
             </div>
 
             <div className="bg-white rounded-xl shadow-sm p-6">
               <h3 className="font-bold text-gray-900 mb-4">🚪 Déconnexion</h3>
               <p className="text-sm text-gray-600 mb-4">
-                Se déconnecter vous redirigera vers l'écran de verrouillage.
+                Se déconnecter vous redirigera vers l'écran de connexion.
               </p>
               <button
                 onClick={handleLogout}

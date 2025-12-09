@@ -26,10 +26,12 @@ function App() {
     }
   }, []);
 
-  const handleLogin = (username: string, password: string) => {
+  const handleLogin = (username: string, password: string): boolean => {
     if (AuthService.loginWithCredentials(username, password)) {
       setIsUnlocked(true);
+      return true;
     }
+    return false;
   };
 
   if (!isUnlocked) {
@@ -53,19 +55,19 @@ function App() {
       {/* Header with Navigation */}
       <div className="bg-white border-b border-gray-200 sticky top-0 z-10 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between py-4">
-            <h1 className="text-2xl font-bold text-gray-900">📊 Gîte Master</h1>
+          <div className="flex items-center justify-between py-4 gap-4">
+            <h1 className="text-2xl font-bold text-gray-900 flex-shrink-0">📊 Gîte Master</h1>
             
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 flex-1 justify-end">
               <button
                 onClick={() => setShowHelp(true)}
-                className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:shadow-lg flex items-center gap-2 transition-all"
+                className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:shadow-lg flex items-center gap-2 transition-all flex-shrink-0"
               >
                 <HelpCircle size={18} />
                 <span className="hidden sm:inline font-medium">Aide</span>
               </button>
               
-              <nav className="flex items-center gap-1">
+              <nav className="flex items-center gap-1 overflow-x-auto scrollbar-hide" style={{ maxWidth: 'calc(100vw - 280px)' }}>
               {navItems.map(item => {
                 const Icon = item.icon;
                 return (
@@ -104,6 +106,16 @@ function App() {
 
       {/* Help Guide Modal */}
       {showHelp && <HelpGuide onClose={() => setShowHelp(false)} />}
+
+      <style>{`
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      `}</style>
     </div>
   );
 }

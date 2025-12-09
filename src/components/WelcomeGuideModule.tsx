@@ -62,9 +62,17 @@ const DEFAULT_GUIDE: WelcomeGuide = {
 };
 
 const WelcomeGuideModule: React.FC = () => {
-  const [guide, setGuide] = useState<WelcomeGuide>(DEFAULT_GUIDE);
+  const [guide, setGuide] = useState<WelcomeGuide>(() => {
+    const saved = localStorage.getItem('gitemaster_welcome_guide');
+    return saved ? JSON.parse(saved) : DEFAULT_GUIDE;
+  });
   const [showPreview, setShowPreview] = useState(false);
   const [activeTab, setActiveTab] = useState<'settings' | 'preview'>('settings');
+
+  const handleSaveGuide = () => {
+    localStorage.setItem('gitemaster_welcome_guide', JSON.stringify(guide));
+    alert('✅ Livret d\'accueil sauvegardé !');
+  };
 
   const generateGuideUrl = () => {
     return `https://gitemaster.app/guide/${Math.random().toString(36).substr(2, 9)}`;
@@ -89,7 +97,7 @@ const WelcomeGuideModule: React.FC = () => {
         
         <div className="flex gap-3">
           <button
-            onClick={() => setShowPreview(!showPreview)}
+            onClick={() => setActiveTab('preview')}
             className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-center gap-2 transition-colors shadow-lg"
           >
             <ExternalLink size={20} />

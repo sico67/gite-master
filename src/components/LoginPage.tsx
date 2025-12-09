@@ -10,12 +10,19 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
     setIsAnimating(true);
+    
     setTimeout(() => {
-      onLogin(username, password);
+      const success = onLogin(username, password);
+      if (!success) {
+        setError('Identifiants incorrects');
+        setIsAnimating(false);
+      }
     }, 600);
   };
 
@@ -164,6 +171,16 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
                   </a>
                 </div>
 
+                {/* Error Message */}
+                {error && (
+                  <div className="bg-red-500/10 border border-red-500/50 rounded-lg p-3 animate-shake">
+                    <p className="text-red-400 text-sm font-medium flex items-center gap-2">
+                      <span className="text-lg">❌</span>
+                      {error}
+                    </p>
+                  </div>
+                )}
+
                 {/* Submit Button */}
                 <button
                   type="submit"
@@ -205,6 +222,14 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
         }
         .animation-delay-4000 {
           animation-delay: 4s;
+        }
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          10%, 30%, 50%, 70%, 90% { transform: translateX(-8px); }
+          20%, 40%, 60%, 80% { transform: translateX(8px); }
+        }
+        .animate-shake {
+          animation: shake 0.5s;
         }
       `}</style>
     </div>

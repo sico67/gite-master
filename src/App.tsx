@@ -7,9 +7,11 @@ import MessagingModule from './components/MessagingModule';
 import AccountingModule from './components/AccountingModule';
 import SyncModule from './components/SyncModule';
 import CleaningModule from './components/CleaningModule';
+import AutomationModule from './components/AutomationModule';
+import WelcomeGuideModule from './components/WelcomeGuideModule';
 import AuthService from './services/AuthService';
 
-type View = 'dashboard' | 'calendar' | 'messaging' | 'accounting' | 'sync' | 'cleaning' | 'admin';
+type View = 'dashboard' | 'calendar' | 'messaging' | 'accounting' | 'sync' | 'cleaning' | 'automation' | 'guide' | 'admin';
 
 function App() {
   const [pin, setPin] = useState('');
@@ -148,6 +150,8 @@ function App() {
     { id: 'calendar', label: 'Calendrier', icon: Calendar },
     { id: 'messaging', label: 'Messages', icon: MessageSquare },
     { id: 'cleaning', label: 'Ménage', icon: LayoutDashboard },
+    { id: 'automation', label: 'Auto', icon: RefreshCw },
+    { id: 'guide', label: 'Livret', icon: SettingsIcon },
     { id: 'accounting', label: 'Compta', icon: DollarSign },
     { id: 'sync', label: 'Sync', icon: RefreshCw },
     { id: 'admin', label: 'Admin', icon: SettingsIcon },
@@ -186,10 +190,12 @@ function App() {
 
       {/* Content */}
       <div className="min-h-[calc(100vh-80px)]">
-        {currentView === 'dashboard' && <Dashboard />}
+        {currentView === 'dashboard' && <Dashboard onNavigate={setCurrentView} />}
         {currentView === 'calendar' && <CalendarModule />}
         {currentView === 'messaging' && <MessagingModule />}
         {currentView === 'cleaning' && <CleaningModule />}
+        {currentView === 'automation' && <AutomationModule />}
+        {currentView === 'guide' && <WelcomeGuideModule />}
         {currentView === 'accounting' && <AccountingModule />}
         {currentView === 'sync' && <SyncModule />}
         {currentView === 'admin' && <AdminPage />}

@@ -30,7 +30,11 @@ interface Task {
   dueDate: string;
 }
 
-const Dashboard: React.FC = () => {
+interface DashboardProps {
+  onNavigate: (view: 'dashboard' | 'calendar' | 'messaging' | 'accounting' | 'sync' | 'cleaning' | 'automation' | 'guide' | 'admin') => void;
+}
+
+const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
   const [stats, setStats] = useState({
     monthRevenue: 4850,
     monthRevenueChange: 12.5,
@@ -148,7 +152,10 @@ const Dashboard: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         
         {/* Revenue */}
-        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+        <div 
+          onClick={() => onNavigate('accounting')}
+          className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 cursor-pointer hover:shadow-md transition-shadow"
+        >
           <div className="flex items-center justify-between mb-4">
             <div className="p-2 bg-green-100 rounded-lg">
               <DollarSign className="text-green-600" size={24} />
@@ -167,7 +174,10 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* Bookings */}
-        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+        <div 
+          onClick={() => onNavigate('calendar')}
+          className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 cursor-pointer hover:shadow-md transition-shadow"
+        >
           <div className="flex items-center justify-between mb-4">
             <div className="p-2 bg-blue-100 rounded-lg">
               <Calendar className="text-blue-600" size={24} />
@@ -186,7 +196,10 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* Occupancy */}
-        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+        <div 
+          onClick={() => onNavigate('calendar')}
+          className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 cursor-pointer hover:shadow-md transition-shadow"
+        >
           <div className="flex items-center justify-between mb-4">
             <div className="p-2 bg-purple-100 rounded-lg">
               <Home className="text-purple-600" size={24} />
@@ -205,7 +218,10 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* Rating */}
-        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+        <div 
+          onClick={() => onNavigate('messaging')}
+          className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 cursor-pointer hover:shadow-md transition-shadow"
+        >
           <div className="flex items-center justify-between mb-4">
             <div className="p-2 bg-yellow-100 rounded-lg">
               <Star className="text-yellow-600" size={24} />

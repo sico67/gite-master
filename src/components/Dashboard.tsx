@@ -386,28 +386,19 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
 
       {/* Quick Actions */}
       <div className="mt-8 grid md:grid-cols-3 gap-4">
-        <button 
-          onClick={() => onNavigate('calendar')}
-          className="p-6 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl shadow-lg hover:shadow-xl transition-all hover:scale-[1.02]"
-        >
+        <button className="p-6 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl shadow-lg hover:shadow-xl transition-all hover:scale-[1.02]">
           <Calendar size={32} className="mb-3" />
           <h3 className="font-bold text-lg mb-1">Nouvelle réservation</h3>
           <p className="text-sm text-blue-100">Ajouter une réservation manuellement</p>
         </button>
         
-        <button 
-          onClick={() => onNavigate('messaging')}
-          className="p-6 bg-gradient-to-br from-green-500 to-green-600 text-white rounded-xl shadow-lg hover:shadow-xl transition-all hover:scale-[1.02]"
-        >
+        <button className="p-6 bg-gradient-to-br from-green-500 to-green-600 text-white rounded-xl shadow-lg hover:shadow-xl transition-all hover:scale-[1.02]">
           <Users size={32} className="mb-3" />
           <h3 className="font-bold text-lg mb-1">Messagerie</h3>
           <p className="text-sm text-green-100">Contacter vos clients</p>
         </button>
         
-        <button 
-          onClick={() => onNavigate('accounting')}
-          className="p-6 bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl shadow-lg hover:shadow-xl transition-all hover:scale-[1.02]"
-        >
+        <button className="p-6 bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-xl shadow-lg hover:shadow-xl transition-all hover:scale-[1.02]">
           <TrendingUp size={32} className="mb-3" />
           <h3 className="font-bold text-lg mb-1">Rapports</h3>
           <p className="text-sm text-purple-100">Voir les statistiques détaillées</p>

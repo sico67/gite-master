@@ -79,22 +79,6 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
               </div>
             ))}
           </div>
-
-          {/* Stats */}
-          <div className="mt-12 flex gap-8">
-            <div>
-              <div className="text-4xl font-black text-white mb-1">15h</div>
-              <div className="text-gray-400 text-sm">de développement</div>
-            </div>
-            <div>
-              <div className="text-4xl font-black text-white mb-1">9</div>
-              <div className="text-gray-400 text-sm">modules complets</div>
-            </div>
-            <div>
-              <div className="text-4xl font-black text-white mb-1">70k€</div>
-              <div className="text-gray-400 text-sm">de valeur</div>
-            </div>
-          </div>
         </div>
 
         {/* Right side - Login Form */}

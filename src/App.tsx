@@ -25,7 +25,7 @@ function App() {
   }, []);
 
   const handleLogin = (username: string, password: string) => {
-    if (AuthService.login(username, password)) {
+    if (AuthService.loginWithCredentials(username, password)) {
       setIsUnlocked(true);
     }
   };

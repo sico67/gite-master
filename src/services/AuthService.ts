@@ -53,12 +53,30 @@ class AuthService {
     return pin === this.getStoredPin();
   }
 
+  verifyCredentials(username: string, password: string): boolean {
+    // Credentials par défaut
+    return (username === 'admin' && password === 'admin123');
+  }
+
   login(pin: string, rememberMe: boolean = false): boolean {
     if (this.verifyPin(pin)) {
       this.session = {
         isAuthenticated: true,
         lastActivity: Date.now(),
         rememberMe,
+      };
+      this.saveSession();
+      return true;
+    }
+    return false;
+  }
+
+  loginWithCredentials(username: string, password: string): boolean {
+    if (this.verifyCredentials(username, password)) {
+      this.session = {
+        isAuthenticated: true,
+        lastActivity: Date.now(),
+        rememberMe: true,
       };
       this.saveSession();
       return true;

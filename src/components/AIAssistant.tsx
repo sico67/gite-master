@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Sparkles, Send, Loader, X } from 'lucide-react';
+import { Sparkles, Send, Loader, X, DollarSign } from 'lucide-react';
+import AIService from '../services/AIService';
 
 interface AIAssistantProps {
   onClose: () => void;
@@ -37,233 +38,77 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ onClose }) => {
     setResponse('');
 
     try {
-      // POC: Simulation de réponse IA
-      // En production: Appel API OpenAI/Claude
-      await simulateAIResponse(promptToSend);
-    } catch (error) {
-      setResponse('❌ Erreur: Impossible de contacter l\'assistant IA. Veuillez réessayer.');
+      let result;
+
+      // Détecter le type de prompt et utiliser la méthode appropriée
+      if (promptToSend.toLowerCase().includes('bienvenue') || promptToSend.toLowerCase().includes('message')) {
+        result = await AIService.generateWelcomeMessage({
+          guestName: 'Marie',
+          propertyName: 'Villa Paradis',
+          checkIn: '2025-07-15',
+          checkOut: '2025-07-22',
+          wifiSSID: 'Villa-WiFi',
+          wifiPassword: 'Bienvenue2025!',
+          gateCode: '1234A',
+          keyBoxCode: '5678'
+        });
+      } else if (promptToSend.toLowerCase().includes('description') || promptToSend.toLowerCase().includes('annonce')) {
+        result = await AIService.generatePropertyDescription({
+          propertyName: 'Villa Moderne',
+          type: 'villa',
+          city: 'Nice',
+          guests: 4,
+          bedrooms: 2,
+          amenities: ['Piscine', 'WiFi', 'Climatisation', 'Parking']
+        });
+      } else if (promptToSend.toLowerCase().includes('prix') || promptToSend.toLowerCase().includes('tarif')) {
+        result = await AIService.suggestPricing({
+          propertyType: 'villa',
+          city: 'Nice',
+          guests: 4,
+          season: 'high'
+        });
+      } else if (promptToSend.toLowerCase().includes('automation') || promptToSend.toLowerCase().includes('scénario')) {
+        result = await AIService.createAutomationScenario({
+          trigger: 'J-1 avant check-out',
+          goal: 'Rappeler les instructions de départ',
+          propertyName: 'Villa Paradis'
+        });
+      } else {
+        // Génération générique
+        result = await AIService.generate(promptToSend, {
+          systemPrompt: 'Tu es un assistant spécialisé en gestion de locations saisonnières. Tu fournis des réponses professionnelles, précises et actionnables.',
+          temperature: 0.7,
+          maxTokens: 1000
+        });
+      }
+
+      if (result.success && result.text) {
+        // Effet typing
+        let currentText = '';
+        for (let i = 0; i < result.text.length; i++) {
+          currentText += result.text[i];
+          setResponse(currentText);
+          if (i % 5 === 0) {
+            await new Promise(resolve => setTimeout(resolve, 10));
+          }
+        }
+
+        // Afficher coût si disponible
+        if (result.usage && result.usage.cost) {
+          const costMessage = `\n\n---\n💰 Coût: $${result.usage.cost.toFixed(4)} (${result.usage.total_tokens} tokens)`;
+          setResponse(currentText + costMessage);
+        }
+      } else {
+        setResponse(`❌ Erreur: ${result.error || 'Erreur inconnue'}`);
+      }
+    } catch (error: any) {
+      setResponse(`❌ Erreur: ${error.message}`);
     } finally {
       setLoading(false);
     }
   };
 
-  const simulateAIResponse = async (userPrompt: string) => {
-    // Simulation délai API
-    await new Promise(resolve => setTimeout(resolve, 1500));
-
-    // Réponses simulées basées sur le type de prompt
-    let simulatedResponse = '';
-
-    if (userPrompt.toLowerCase().includes('bienvenue') || userPrompt.toLowerCase().includes('message')) {
-      simulatedResponse = `📧 **Message de Bienvenue Suggéré**
-
-Bonjour {guest} ! 👋
-
-Nous sommes ravis de vous accueillir bientôt dans notre magnifique villa en bord de mer ! 🌊
-
-**Informations pratiques pour votre arrivée :**
-
-🔑 **Accès**
-- Code portail : 1234A
-- Code boîte à clés : 5678
-- Les clés sont dans la boîte fixée à droite de l'entrée
-
-📡 **WiFi**
-- Réseau : Villa-Paradis-WiFi
-- Mot de passe : Bienvenue2025!
-
-⏰ **Check-in** : À partir de 16h
-📍 **Adresse exacte** : [Votre adresse]
-
-Pour toute question avant ou pendant votre séjour, n'hésitez pas à nous contacter au +33 6 12 34 56 78.
-
-Au plaisir de vous recevoir !
-L'équipe Villa Paradis ✨
-
----
-
-💡 **Conseil** : Vous pouvez personnaliser ce message en ajoutant des recommandations locales ou des instructions spécifiques à votre propriété.`;
-    } 
-    else if (userPrompt.toLowerCase().includes('prix') || userPrompt.toLowerCase().includes('tarif')) {
-      simulatedResponse = `💰 **Stratégie de Tarification Dynamique - Été Sud France**
-
-**Recommandations pour villa 4 personnes :**
-
-📊 **Prix de base suggérés :**
-- Semaine standard (juin/septembre) : 120-150€/nuit
-- Haute saison (juillet-août) : 180-220€/nuit
-- Week-end 3 nuits : +15%
-- Semaine complète : -10%
-
-🎯 **Optimisations :**
-
-1. **Tarification anticipée** : -20% pour réservations >90 jours
-2. **Dernière minute** : -30% pour réservations <7 jours
-3. **Durée minimale** : 3 nuits en semaine, 7 nuits en août
-4. **Événements locaux** : +30% (Festival de Cannes, Grand Prix, etc.)
-
-📈 **Moyenne marché concurrent :**
-- Votre zone : 140-180€/nuit
-- Positionnement recommandé : 160€/nuit
-
-💡 **Conseil pro** : Activez la tarification dynamique automatique dans Admin → Propriétés pour ajuster les prix en temps réel selon la demande.`;
-    }
-    else if (userPrompt.toLowerCase().includes('description') || userPrompt.toLowerCase().includes('annonce')) {
-      simulatedResponse = `✍️ **Description Optimisée SEO**
-
-**TITRE** (max 50 caractères)
-"Villa Moderne Piscine Chauffée - Vue Mer Nice 🌊"
-
-**DESCRIPTION COURTE** (160 caractères - meta)
-"Superbe villa 4★ avec piscine chauffée et vue mer panoramique. À 10min des plages de Nice. Terrasse, parking, climatisation. Séjour de rêve !"
-
-**DESCRIPTION LONGUE** (Optimisée mots-clés)
-
-🏡 **Votre Oasis Méditerranéenne à Nice**
-
-Découvrez notre magnifique **villa contemporaine** nichée sur les hauteurs de Nice, offrant une **vue mer imprenable** sur la Baie des Anges.
-
-✨ **Pourquoi nos voyageurs nous adorent :**
-• 🏊 Piscine chauffée privée (toute l'année)
-• 🌅 Terrasse panoramique avec vue mer
-• ❄️ Climatisation dans toutes les pièces
-• 📺 Smart TV Netflix, WiFi haut débit
-• 🚗 Parking privé sécurisé
-• 🏖️ À 10 minutes des plages
-
-🛏️ **Espace & Confort** (120m²)
-- 2 chambres spacieuses (lit Queen)
-- 2 salles de bain modernes
-- Cuisine équipée (lave-vaisselle, Nespresso)
-- Salon lumineux ouvrant sur terrasse
-
-📍 **Emplacement Idéal**
-- Promenade des Anglais : 10 min
-- Vieux Nice : 15 min
-- Aéroport : 20 min
-- Restaurants & commerces : 5 min
-
-💎 **Services Inclus**
-- Linge de maison premium
-- Produits d'accueil
-- Guide local personnalisé
-- Assistance 7j/7
-
-🏆 **Villa Classée 4★** - Note moyenne : 4.9/5 (127 avis)
-
-"Un séjour exceptionnel ! Vue magnifique, propreté impeccable, hôte réactif. On reviendra !" - Sophie, août 2024
-
-📅 **Réservez maintenant** et profitez de -20% sur votre premier séjour !
-
----
-
-🔎 **Mots-clés intégrés** : villa Nice, piscine chauffée, vue mer, location saisonnière Nice, villa vacances Côte d'Azur, hébergement Nice centre`;
-    }
-    else if (userPrompt.toLowerCase().includes('automatisation') || userPrompt.toLowerCase().includes('scénario')) {
-      simulatedResponse = `🤖 **Scénario d'Automatisation J-3**
-
-**DÉCLENCHEUR**
-⏰ 3 jours avant check-in (72h exactement)
-📧 Envoi automatique email + SMS
-
-**CONDITIONS**
-✅ Statut réservation = "Confirmée"
-✅ Paiement = "Reçu"
-✅ Première réservation du voyageur OU dernière résa >6 mois
-
-**MESSAGE EMAIL**
-
-**Sujet** : "Votre arrivée approche ! Infos pratiques pour votre séjour"
-
-**Contenu** :
-\`\`\`
-Bonjour {guest_name},
-
-J-3 avant votre arrivée ! 🎉
-
-Nous avons hâte de vous accueillir du {checkin_date} au {checkout_date}.
-
-📍 **ACCÈS**
-Adresse exacte : {property_address}
-Code portail : {gate_code}
-Code boîte à clés : {keybox_code}
-
-📋 **INSTRUCTIONS**
-1. Le portail se trouve à gauche de l'entrée
-2. La boîte à clés est fixée sur le mur à droite
-3. Les clés sont à l'intérieur
-
-📡 **WIFI**
-Réseau : {wifi_ssid}
-Mot de passe : {wifi_password}
-
-☀️ **MÉTÉO PRÉVUE**
-{checkin_date} : {weather_forecast}
-
-🍴 **NOS RECOMMANDATIONS**
-- Restaurant Le Bistrot (5min à pied)
-- Plage de la Baie (15min)
-- Marché provençal (samedi matin)
-
-📱 **CONTACT URGENCE**
-{host_phone} (disponible 24/7)
-
-À très bientôt !
-{host_name}
-\`\`\`
-
-**SMS (160 caractères)**
-"Bonjour {guest_name} ! J-3 avant votre arrivée chez nous 🏠 Email avec toutes les infos envoyé. Check-in dès {checkin_time}. À bientôt ! {host_name}"
-
-**ACTIONS COMPLÉMENTAIRES**
-1. ✅ Créer tâche ménage J-1 si pas déjà fait
-2. ✅ Vérifier stocks (PQ, savon, café)
-3. ✅ Logger dans historique réservation
-4. 📊 Tracker ouverture email
-
-💡 **Pour activer** : Automatisation → Scénarios → "Infos J-3" → Activer
-
----
-
-🚀 **Prochaine automatisation suggérée** : Message post-séjour J+1 avec demande d'avis`;
-    }
-    else {
-      simulatedResponse = `🤖 **Assistant IA - Réponse Générique**
-
-Merci pour votre question ! Je suis Claude, votre assistant pour Gîte Master.
-
-**Je peux vous aider avec :**
-- 📝 Rédaction de messages et annonces
-- 💰 Optimisation des prix
-- 🤖 Création d'automatisations
-- 📊 Analyse de performances
-- ✍️ Amélioration de descriptions
-- 💬 Réponses aux voyageurs
-
-**Essayez un prompt comme :**
-- "Rédige un message de bienvenue chaleureux"
-- "Suggère-moi des prix pour l'été"
-- "Améliore la description de ma villa"
-- "Crée un scénario d'automatisation pour les check-outs"
-
-💡 **Astuce** : Plus vous donnez de contexte (type de bien, localisation, capacité), plus mes suggestions seront précises !
-
----
-
-⚠️ **Note** : Cette fonctionnalité est en version POC (Proof of Concept). 
-En production, l'assistant sera connecté à GPT-4 pour des réponses personnalisées en temps réel.`;
-    }
-
-    // Effet de typing
-    let currentText = '';
-    for (let i = 0; i < simulatedResponse.length; i++) {
-      currentText += simulatedResponse[i];
-      setResponse(currentText);
-      if (i % 5 === 0) { // Update tous les 5 caractères
-        await new Promise(resolve => setTimeout(resolve, 10));
-      }
-    }
-  };
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -361,7 +206,10 @@ En production, l'assistant sera connecté à GPT-4 pour des réponses personnali
             </button>
           </div>
           <p className="text-xs text-gray-500 mt-2">
-            💡 POC : Réponses simulées. En production, connexion GPT-4 pour réponses personnalisées.
+            {AIService.isReady() 
+              ? `✅ IA activée: ${AIService.getProvider()} (${AIService.getModel()})`
+              : '💡 Mode simulation. Configurez OpenAI ou Anthropic dans Admin → Intégrations → IA pour activer l\'IA réelle.'
+            }
           </p>
         </div>
 

@@ -1,6 +1,8 @@
 // Service centralisé de gestion des données
 // Gère localStorage + interactions entre modules
 
+import StorageManager from './StorageManager';
+
 interface Booking {
   id: string;
   guestName: string;
@@ -56,12 +58,11 @@ class DataService {
   // ========== BOOKINGS ==========
 
   getBookings(): Booking[] {
-    const data = localStorage.getItem('gitemaster_bookings');
-    return data ? JSON.parse(data) : [];
+    return StorageManager.loadBookings();
   }
 
   saveBookings(bookings: Booking[]): void {
-    localStorage.setItem('gitemaster_bookings', JSON.stringify(bookings));
+    StorageManager.saveBookings(bookings);
   }
 
   addBooking(booking: Booking, createCleaningTask: boolean = true): void {
@@ -100,12 +101,11 @@ class DataService {
   // ========== CLEANING TASKS ==========
 
   getCleaningTasks(): CleaningTask[] {
-    const data = localStorage.getItem('gitemaster_cleaning');
-    return data ? JSON.parse(data) : [];
+    return StorageManager.loadCleaningTasks();
   }
 
   saveCleaningTasks(tasks: CleaningTask[]): void {
-    localStorage.setItem('gitemaster_cleaning', JSON.stringify(tasks));
+    StorageManager.saveCleaningTasks(tasks);
   }
 
   addCleaningTask(task: CleaningTask): void {

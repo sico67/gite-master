@@ -1,6 +1,8 @@
 // Service de gestion des propriétés
 // Support multi-propriétés avec toutes les infos nécessaires
 
+import StorageManager from './StorageManager';
+
 export interface Property {
   id: string;
   name: string;
@@ -97,9 +99,9 @@ class PropertyService {
   // ========== CRUD ==========
 
   loadProperties(): Property[] {
-    const saved = localStorage.getItem('gitemaster_properties');
-    if (saved) {
-      this.properties = JSON.parse(saved);
+    const saved = StorageManager.loadProperties();
+    if (saved.length > 0) {
+      this.properties = saved;
     } else {
       // Propriété démo par défaut
       this.properties = [this.getDefaultProperty()];
@@ -109,7 +111,7 @@ class PropertyService {
   }
 
   saveProperties(): void {
-    localStorage.setItem('gitemaster_properties', JSON.stringify(this.properties));
+    StorageManager.saveProperties(this.properties);
   }
 
   getProperties(): Property[] {

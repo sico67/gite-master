@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import MonthDetailsModal from './MonthDetailsModal';
+import AIAssistant from './AIAssistant';
 import DataService from '../services/DataService';
 import { 
   TrendingUp, 
@@ -12,7 +13,8 @@ import {
   Clock,
   Star,
   ArrowUp,
-  ArrowDown
+  ArrowDown,
+  Sparkles
 } from 'lucide-react';
 
 interface Booking {
@@ -56,6 +58,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
 
   const [showMonthModal, setShowMonthModal] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState<string>('');
+  const [showAI, setShowAI] = useState(false);
 
   const [revenueData] = useState([
     { month: 'Jan', revenue: 0, fullDate: '2025-01' },
@@ -338,14 +341,26 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
       </div>
 
       {/* Quick Actions */}
-      <div className="mt-8 grid md:grid-cols-3 gap-4">
+      <div className="mt-8 grid md:grid-cols-4 gap-4">
+        <button 
+          onClick={() => setShowAI(true)}
+          className="p-6 bg-gradient-to-br from-purple-600 via-pink-600 to-orange-500 text-white rounded-xl shadow-lg hover:shadow-2xl transition-all hover:scale-[1.02] relative overflow-hidden"
+        >
+          <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
+          <div className="relative">
+            <Sparkles size={32} className="mb-3 animate-pulse" />
+            <h3 className="font-bold text-lg mb-1">🤖 Assistant IA</h3>
+            <p className="text-sm text-white/90">Posez-moi vos questions</p>
+          </div>
+        </button>
+
         <button 
           onClick={() => onNavigate('calendar')}
           className="p-6 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl shadow-lg hover:shadow-xl transition-all hover:scale-[1.02]"
         >
           <Calendar size={32} className="mb-3" />
           <h3 className="font-bold text-lg mb-1">Nouvelle réservation</h3>
-          <p className="text-sm text-blue-100">Ajouter une réservation manuellement</p>
+          <p className="text-sm text-blue-100">Ajouter une réservation</p>
         </button>
         
         <button 
@@ -363,7 +378,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
         >
           <TrendingUp size={32} className="mb-3" />
           <h3 className="font-bold text-lg mb-1">Rapports</h3>
-          <p className="text-sm text-purple-100">Voir les statistiques détaillées</p>
+          <p className="text-sm text-purple-100">Voir les statistiques</p>
         </button>
       </div>
 
@@ -377,6 +392,9 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
           onClose={() => setShowMonthModal(false)}
         />
       )}
+
+      {/* AI Assistant Modal */}
+      {showAI && <AIAssistant onClose={() => setShowAI(false)} />}
     </div>
   );
 };

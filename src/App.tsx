@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Lock, LayoutDashboard, Calendar, MessageSquare, DollarSign, RefreshCw, Settings as SettingsIcon, HelpCircle } from 'lucide-react';
 import LoginPage from './components/LoginPage';
 import HelpGuide from './components/HelpGuide';
+import OnboardingWizard from './components/OnboardingWizard';
+import GuestGuidePublic from './components/GuestGuidePublic';
+import CleaningReportPublic from './components/CleaningReportPublic';
 import AdminPage from './components/AdminPage';
 import Dashboard from './components/Dashboard';
 import CalendarModule from './components/CalendarModule';
@@ -19,10 +22,25 @@ function App() {
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [currentView, setCurrentView] = useState<View>('dashboard');
   const [showHelp, setShowHelp] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
+  // Check for public routes
   useEffect(() => {
+    const hash = window.location.hash;
+    if (hash === '#guest-guide' || hash === '#cleaning-report') {
+      // Public routes, no auth needed
+      return;
+    }
+    
+    // Check auth for private routes
     if (AuthService.isAuthenticated()) {
       setIsUnlocked(true);
+      
+      // Check if onboarding completed
+      const onboardingCompleted = localStorage.getItem('gitemaster_onboarding_completed');
+      if (!onboardingCompleted) {
+        setShowOnboarding(true);
+      }
     }
   }, []);
 
@@ -34,8 +52,23 @@ function App() {
     return false;
   };
 
+  // Public routes (no auth)
+  const hash = window.location.hash;
+  if (hash === '#guest-guide') {
+    return <GuestGuidePublic />;
+  }
+  if (hash === '#cleaning-report') {
+    return <CleaningReportPublic />;
+  }
+
+  // Private routes (auth required)
   if (!isUnlocked) {
     return <LoginPage onLogin={handleLogin} />;
+  }
+
+  // Show onboarding if not completed
+  if (showOnboarding) {
+    return <OnboardingWizard onComplete={() => setShowOnboarding(false)} />;
   }
 
   const navItems = [

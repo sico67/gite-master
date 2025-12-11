@@ -25,16 +25,36 @@ const CleaningReportPublic: React.FC<CleaningReportPublicProps> = ({ taskId = 'd
     cleanerName: ''
   });
 
-  const [checklist, setChecklist] = useState([
-    { id: '1', task: 'Changer les draps', completed: false },
-    { id: '2', task: 'Aspirer et laver le sol', completed: false },
-    { id: '3', task: 'Nettoyer salle de bain', completed: false },
-    { id: '4', task: 'Nettoyer cuisine', completed: false },
-    { id: '5', task: 'Vider les poubelles', completed: false },
-    { id: '6', task: 'Vérifier stocks (PQ, savon)', completed: false },
-    { id: '7', task: 'Nettoyer vitres', completed: false },
-    { id: '8', task: 'Dépoussiérer meubles', completed: false }
-  ]);
+  // Charger la checklist personnalisée depuis localStorage
+  const getCustomChecklist = () => {
+    try {
+      const saved = localStorage.getItem('gitemaster_cleaning_checklist');
+      if (saved) {
+        const customList = JSON.parse(saved);
+        return customList.map((item: any, index: number) => ({
+          id: String(index + 1),
+          task: item.text,
+          completed: false
+        }));
+      }
+    } catch (error) {
+      console.error('Erreur chargement checklist:', error);
+    }
+    
+    // Checklist par défaut si pas de personnalisation
+    return [
+      { id: '1', task: 'Changer les draps', completed: false },
+      { id: '2', task: 'Aspirer et laver le sol', completed: false },
+      { id: '3', task: 'Nettoyer salle de bain', completed: false },
+      { id: '4', task: 'Nettoyer cuisine', completed: false },
+      { id: '5', task: 'Vider les poubelles', completed: false },
+      { id: '6', task: 'Vérifier stocks (PQ, savon)', completed: false },
+      { id: '7', task: 'Nettoyer vitres', completed: false },
+      { id: '8', task: 'Dépoussiérer meubles', completed: false }
+    ];
+  };
+
+  const [checklist, setChecklist] = useState(getCustomChecklist());
 
   const [photos, setPhotos] = useState<string[]>([]);
   const [issues, setIssues] = useState('');

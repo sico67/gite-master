@@ -24,8 +24,8 @@ interface Booking {
 interface BookingDetailsModalProps {
   booking: Booking;
   onClose: () => void;
-  onEdit: () => void;
-  onDelete: () => void;
+  onEdit: (booking: Booking) => void;
+  onDelete: (booking: Booking) => void;
 }
 
 const BookingDetailsModal: React.FC<BookingDetailsModalProps> = ({
@@ -253,7 +253,7 @@ const BookingDetailsModal: React.FC<BookingDetailsModalProps> = ({
             Message
           </button>
           <button
-            onClick={onEdit}
+            onClick={() => onEdit(booking)}
             className="flex-1 px-4 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 flex items-center justify-center gap-2 font-medium transition-colors"
           >
             <Edit size={18} />
@@ -268,7 +268,7 @@ const BookingDetailsModal: React.FC<BookingDetailsModalProps> = ({
             </button>
           ) : (
             <button
-              onClick={onDelete}
+              onClick={() => onDelete(booking)}
               className="px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 flex items-center justify-center gap-2 font-medium transition-colors"
             >
               Confirmer

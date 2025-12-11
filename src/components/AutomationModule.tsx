@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Zap, Plus, Clock, Send, Edit, Trash2, Play, Pause, CheckCircle } from 'lucide-react';
+import { Zap, Plus, Clock, Send, Edit, Trash2, Play, Pause, CheckCircle, X } from 'lucide-react';
 import DataService from '../services/DataService';
 import EmailService from '../services/EmailService';
 import SMSService from '../services/SMSService';

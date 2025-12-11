@@ -103,7 +103,8 @@ const CleaningModule: React.FC = () => {
     const updated = tasks.map(t => 
       t.id === taskId ? { ...t, status: newStatus } : t
     );
-    saveTasks(updated);
+    setTasks(updated);
+    DataService.saveCleaningTasks(updated);
   };
 
   const handleToggleChecklistItem = (taskId: string, itemId: string) => {
@@ -121,12 +122,15 @@ const CleaningModule: React.FC = () => {
       }
       return task;
     });
-    saveTasks(updated);
+    setTasks(updated);
+    DataService.saveCleaningTasks(updated);
   };
 
   const handleDeleteTask = (taskId: string) => {
     if (confirm('Supprimer cette tâche ?')) {
-      saveTasks(tasks.filter(t => t.id !== taskId));
+      const updated = tasks.filter(t => t.id !== taskId);
+      setTasks(updated);
+      DataService.saveCleaningTasks(updated);
     }
   };
 

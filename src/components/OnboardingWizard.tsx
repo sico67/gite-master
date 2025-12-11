@@ -92,6 +92,11 @@ const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onComplete }) => {
         deposit: 500,
         minStay: 2
       },
+      contact: {
+        name: '',
+        email: '',
+        phone: ''
+      },
       wifi: {
         ssid: formData.wifiSsid,
         password: formData.wifiPassword

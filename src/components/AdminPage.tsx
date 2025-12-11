@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Settings, Save, Home, DollarSign, Mail, Palette, Shield, Check, AlertCircle, Star, Link as LinkIcon, Key, Send, Database, CreditCard, Cloud, Brain } from 'lucide-react';
+import { Settings, Save, Home, DollarSign, Mail, Palette, Shield, Check, AlertCircle, Star, Link as LinkIcon, Key, Send, Database, CreditCard, Cloud, Brain, CheckCircle } from 'lucide-react';
 import ConfigService from '../services/ConfigService';
 import AuthService from '../services/AuthService';
 import DataService from '../services/DataService';

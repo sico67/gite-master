@@ -200,7 +200,15 @@ const CalendarModule: React.FC = () => {
 
     if (selectedBooking) {
       // Edit existing
-      const updated = { ...formData, id: selectedBooking.id } as Booking;
+      const updated = { 
+        ...formData, 
+        id: selectedBooking.id,
+        adults: formData.guests || selectedBooking.adults || 2,
+        children: selectedBooking.children || 0,
+        source: selectedBooking.source || 'manual',
+        createdAt: selectedBooking.createdAt || new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      } as Booking;
       DataService.updateBooking(selectedBooking.id, updated);
       loadBookings();
     } else {
@@ -211,7 +219,8 @@ const CalendarModule: React.FC = () => {
         source: 'manual',
         adults: formData.guests || 2,
         children: 0,
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
       } as Booking;
       
       DataService.addBooking(newBooking, newBooking.status === 'confirmed');

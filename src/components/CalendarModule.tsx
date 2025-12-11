@@ -16,8 +16,6 @@ import {
   Trash2,
   X
 } from 'lucide-react';
-// Import dynamique du PropertyService pour éviter les erreurs de dépendance circulaire (si existant)
-// import * as PropertyService from '../services/PropertyService';
 
 interface Booking {
   id: string;
@@ -62,11 +60,9 @@ const CalendarModule: React.FC = () => {
   };
   
   const loadProperties = async () => {
-    // CORRECTION: Assurer que l'appel de PropertyService.getAllProperties() est correct
-    // Nécessite que PropertyService soit importé ou chargé dynamiquement
     try {
-        // Supposition: utilisation de DataService si PropertyService n'est pas facilement importable
-        const loadedProperties = await DataService.getAllProperties();
+        // CORRECTION: Utilisation de DataService.getProperties() au lieu de getAllProperties()
+        const loadedProperties = await DataService.getProperties(); 
         setProperties(loadedProperties);
     } catch (error) {
         console.error("Erreur lors du chargement des propriétés:", error);
@@ -117,10 +113,10 @@ const CalendarModule: React.FC = () => {
   const renderCells = () => {
     const monthStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
     const dateStart = new Date(monthStart);
-    dateStart.setDate(dateStart.getDate() - (firstDayOfMonth(monthStart) === 0 ? 6 : firstDayOfMonth(monthStart) - 1)); // Ajuste pour commencer le dimanche ou lundi
+    // Correction de l'erreur potentielle de dateStart
+    dateStart.setDate(dateStart.getDate() - (firstDayOfMonth(monthStart) === 0 ? 6 : firstDayOfMonth(monthStart) - 1));
 
     const days = [];
-    const numDays = daysInMonth(currentDate);
     let day = dateStart;
     
     // Pour afficher 6 semaines complètes
@@ -460,8 +456,7 @@ const CalendarModule: React.FC = () => {
         </div>
       )}
 
-      {/* Modal Détails Réservation */
-      /* ... (Le reste du code de BookingDetailsModal est omis pour la concision, mais il ne causait pas l'erreur) ... */}
+      {/* Modal Détails Réservation - CORRECTION DE LA SIGNATURE DES PROPS onEdit/onDelete */}
       {showDetailsModal && selectedBooking && (
         <BookingDetailsModal
           booking={selectedBooking}
@@ -469,8 +464,9 @@ const CalendarModule: React.FC = () => {
             setShowDetailsModal(false);
             setSelectedBooking(null);
           }}
-          onEdit={handleEditFromDetails}
-          onDelete={handleDeleteFromDetails}
+          // CORRECTION: onEdit et onDelete reçoivent la réservation comme argument
+          onEdit={(booking: Booking) => handleEditFromDetails(booking)} 
+          onDelete={(booking: Booking) => handleDeleteFromDetails(booking)}
         />
       )}
     </div>

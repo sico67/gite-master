@@ -14,6 +14,16 @@ export interface AppSettings {
     deposit: number;
     minimumStay: number;
   };
+  // API & Intégrations
+  apiKey?: string;
+  apiSecret?: string;
+  googleCalendarUrl?: string;
+  stripeSecretKey?: string;
+  aiModel?: string;
+  reviewLinks?: Array<{
+    platform: string;
+    url: string;
+  }>;
 }
 
 interface Property {

@@ -58,7 +58,7 @@ const CalendarModule: React.FC = () => {
   const loadProperties = () => {
     // Importer PropertyService dynamiquement
     import('../services/PropertyService').then(({ default: PropertyService }) => {
-      const allProps = PropertyService.getAllProperties();
+      const allProps = PropertyService.getProperties(); // CORRIGÉ: Remplacé getAllProperties() par getProperties()
       setProperties(allProps);
       
       // Si aucune propriété sélectionnée, prendre la première active
@@ -325,46 +325,43 @@ const CalendarModule: React.FC = () => {
         
         <button
           onClick={handleAddBooking}
-          className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-center gap-2 transition-colors shadow-lg hover:shadow-xl"
+          className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2 transition-colors font-medium"
         >
-          <Plus size={20} />
-          <span>Nouvelle réservation</span>
+          <Plus size={20} /> Nouvelle réservation
         </button>
       </div>
 
-      {/* Calendar */}
-      <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
-        {/* Calendar Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-4 flex items-center justify-between text-white">
-          <button
-            onClick={previousMonth}
-            className="p-2 hover:bg-blue-500 rounded-lg transition-colors"
-          >
-            <ChevronLeft size={24} />
-          </button>
-          
-          <h2 className="text-xl font-bold capitalize">
-            {formatDate(currentDate)}
-          </h2>
-          
-          <button
-            onClick={nextMonth}
-            className="p-2 hover:bg-blue-500 rounded-lg transition-colors"
-          >
-            <ChevronRight size={24} />
-          </button>
-        </div>
+      {/* Month Navigation */}
+      <div className="flex items-center justify-between bg-white p-4 rounded-xl shadow-sm mb-6">
+        <button 
+          onClick={previousMonth} 
+          className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+        >
+          <ChevronLeft size={24} />
+        </button>
+        <h2 className="text-xl font-bold text-gray-900 capitalize">
+          {formatDate(currentDate)}
+        </h2>
+        <button 
+          onClick={nextMonth} 
+          className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+        >
+          <ChevronRight size={24} />
+        </button>
+      </div>
 
-        {/* Days of week */}
-        <div className="grid grid-cols-7 bg-gray-100 border-b border-gray-200">
-          {['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'].map(day => (
-            <div key={day} className="p-2 md:p-3 text-center text-sm font-semibold text-gray-700">
-              {day}
-            </div>
-          ))}
+      {/* Calendar Grid */}
+      <div className="bg-white rounded-xl shadow-lg p-4">
+        <div className="grid grid-cols-7 font-semibold text-center text-sm md:text-base text-gray-800 border-b border-gray-200 mb-2">
+          <div className="py-2">Lun</div>
+          <div className="py-2">Mar</div>
+          <div className="py-2">Mer</div>
+          <div className="py-2">Jeu</div>
+          <div className="py-2">Ven</div>
+          <div className="py-2 text-red-600">Sam</div>
+          <div className="py-2 text-red-600">Dim</div>
         </div>
-
-        {/* Calendar Grid */}
+        
         <div className="grid grid-cols-7">
           {days}
         </div>
@@ -398,184 +395,164 @@ const CalendarModule: React.FC = () => {
               </h3>
               <button
                 onClick={() => setShowModal(false)}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
               >
-                <X size={24} />
+                <X size={24} className="text-gray-600" />
               </button>
             </div>
-
+            
             {/* Modal Body */}
             <div className="p-6 space-y-6">
-              {/* Guest Info */}
-              <div>
-                <h4 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
-                  <User size={18} className="text-blue-600" />
-                  Informations client
+              <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                <h4 className="font-semibold text-blue-900 mb-2 flex items-center gap-2">
+                  <User size={16} /> Informations Client
                 </h4>
-                <div className="space-y-4">
+                <div className="space-y-3">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Nom complet *
-                    </label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Nom du voyageur *</label>
                     <input
                       type="text"
                       value={formData.guestName}
                       onChange={(e) => handleFormChange('guestName', e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="Jean Dupont"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      required
                     />
                   </div>
-                  
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Email
-                      </label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
                       <input
                         type="email"
                         value={formData.guestEmail}
                         onChange={(e) => handleFormChange('guestEmail', e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="jean@email.com"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                       />
                     </div>
-                    
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Téléphone
-                      </label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Téléphone</label>
                       <input
                         type="tel"
                         value={formData.guestPhone}
                         onChange={(e) => handleFormChange('guestPhone', e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="+33 6 12 34 56 78"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                       />
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Booking Details */}
-              <div>
-                <h4 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
-                  <Home size={18} className="text-blue-600" />
-                  Détails de la réservation
+              <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                <h4 className="font-semibold text-green-900 mb-2 flex items-center gap-2">
+                  <Home size={16} /> Détails du Séjour
                 </h4>
-                <div className="space-y-4">
+                <div className="space-y-3">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Propriété *
-                    </label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Propriété *</label>
                     <select
                       value={formData.propertyId}
                       onChange={(e) => {
                         const property = properties.find(p => p.id === e.target.value);
                         handleFormChange('propertyId', e.target.value);
-                        handleFormChange('propertyName', property?.name || '');
+                        handleFormChange('propertyName', property ? property.name : '');
                       }}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      required
                     >
-                      {properties.map(property => (
-                        <option key={property.id} value={property.id}>
-                          {property.name} ({property.pricing?.basePrice || 0}€/nuit)
-                        </option>
+                      {properties.map(prop => (
+                        <option key={prop.id} value={prop.id}>{prop.name}</option>
                       ))}
                     </select>
                   </div>
 
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Date d'arrivée *
-                      </label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Date d'arrivée *</label>
                       <input
                         type="date"
                         value={formData.checkIn}
                         onChange={(e) => handleFormChange('checkIn', e.target.value)}
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        required
                       />
                     </div>
-                    
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Date de départ *
-                      </label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Date de départ *</label>
                       <input
                         type="date"
                         value={formData.checkOut}
                         onChange={(e) => handleFormChange('checkOut', e.target.value)}
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        required
                       />
                     </div>
                   </div>
 
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Nombre de voyageurs
-                      </label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Nombre de voyageurs</label>
                       <input
                         type="number"
-                        min="1"
                         value={formData.guests}
-                        onChange={(e) => handleFormChange('guests', parseInt(e.target.value))}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        onChange={(e) => handleFormChange('guests', Number(e.target.value))}
+                        min="1"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                       />
                     </div>
-                    
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Statut
-                      </label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Statut</label>
                       <select
                         value={formData.status}
-                        onChange={(e) => handleFormChange('status', e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        onChange={(e) => handleFormChange('status', e.target.value as Booking['status'])}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                       >
-                        <option value="pending">En attente</option>
                         <option value="confirmed">Confirmée</option>
+                        <option value="pending">En attente</option>
                         <option value="cancelled">Annulée</option>
                       </select>
                     </div>
                   </div>
-
-                  {formData.checkIn && formData.checkOut && (
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                      <div className="flex items-center justify-between text-sm mb-2">
-                        <span className="text-gray-700">Nombre de nuits :</span>
-                        <span className="font-bold text-gray-900">
-                          {calculateNights(formData.checkIn, formData.checkOut)}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between text-lg font-bold">
-                        <span className="text-gray-900 flex items-center gap-2">
-                          <DollarSign size={20} className="text-blue-600" />
-                          Prix total :
-                        </span>
-                        <span className="text-blue-600">{formData.totalPrice}€</span>
-                      </div>
-                    </div>
-                  )}
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Notes (optionnel)
-                    </label>
-                    <textarea
-                      value={formData.notes}
-                      onChange={(e) => handleFormChange('notes', e.target.value)}
-                      rows={3}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="Remarques particulières..."
-                    />
+                  
+                  <div className="flex justify-between items-center text-sm font-medium text-gray-700 p-3 bg-gray-100 rounded-lg">
+                    <span>Nuits :</span>
+                    <span className="font-bold">{calculateNights(formData.checkIn || '', formData.checkOut || '')}</span>
                   </div>
                 </div>
               </div>
+
+              <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
+                <h4 className="font-semibold text-purple-900 mb-2 flex items-center gap-2">
+                  <DollarSign size={16} /> Financement
+                </h4>
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Prix Total (€)</label>
+                    <input
+                      type="number"
+                      value={formData.totalPrice}
+                      onChange={(e) => handleFormChange('totalPrice', Number(e.target.value))}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Calculé automatiquement par défaut: {calculatePrice(formData.checkIn || '', formData.checkOut || '', formData.propertyId || '')} €
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Notes (privées)</label>
+                <textarea
+                  value={formData.notes}
+                  onChange={(e) => handleFormChange('notes', e.target.value)}
+                  rows={3}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
             </div>
 
             {/* Modal Footer */}
-            <div className="p-6 border-t border-gray-200 flex flex-col md:flex-row gap-3 sticky bottom-0 bg-white">
+            <div className="p-6 border-t border-gray-200 flex flex-col md:flex-row justify-between gap-3 sticky bottom-0 bg-white">
               {selectedBooking && (
                 <button
                   onClick={() => {
@@ -626,3 +603,6 @@ const CalendarModule: React.FC = () => {
 };
 
 export default CalendarModule;
+export default CalendarModule;
+
+// Déploiement forcé

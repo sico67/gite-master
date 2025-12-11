@@ -29,7 +29,12 @@ interface Booking {
   status: 'confirmed' | 'pending' | 'cancelled';
   totalPrice: number;
   guests: number;
+  adults: number;
+  children: number;
   notes?: string;
+  source: 'direct' | 'airbnb' | 'booking' | 'manual';
+  createdAt: string;
+  updatedAt?: string;
 }
 
 const CalendarModule: React.FC = () => {

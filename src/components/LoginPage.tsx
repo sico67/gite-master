@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Lock, Mail, Eye, EyeOff, Sparkles, TrendingUp, Calendar, Users, Zap, Shield, Clock } from 'lucide-react';
 
 interface LoginPageProps {
-  onLogin: (username: string, password: string) => void;
+  onLogin: (username: string, password: string) => boolean;
 }
 
 const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {

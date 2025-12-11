@@ -100,10 +100,14 @@ class PropertyService {
 
   loadProperties(): Property[] {
     const saved = StorageManager.loadProperties();
+    console.log('📦 PropertyService: Loading properties...', saved.length, 'found');
+    
     if (saved.length > 0) {
       this.properties = saved;
+      console.log('✅ PropertyService: Loaded', saved.length, 'properties from storage');
     } else {
-      // Propriété démo par défaut
+      // Première utilisation - créer propriété démo
+      console.log('⚠️ PropertyService: No properties found, creating default');
       this.properties = [this.getDefaultProperty()];
       this.saveProperties();
     }
@@ -111,7 +115,9 @@ class PropertyService {
   }
 
   saveProperties(): void {
+    console.log('💾 PropertyService: Saving', this.properties.length, 'properties');
     StorageManager.saveProperties(this.properties);
+    console.log('✅ PropertyService: Properties saved successfully');
   }
 
   getProperties(): Property[] {

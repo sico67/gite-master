@@ -23,18 +23,36 @@ interface ChecklistItem {
   completed: boolean;
 }
 
-const DEFAULT_CHECKLIST: ChecklistItem[] = [
-  { id: '1', task: 'Changer les draps', completed: false },
-  { id: '2', task: 'Aspirer et laver le sol', completed: false },
-  { id: '3', task: 'Nettoyer salle de bain', completed: false },
-  { id: '4', task: 'Nettoyer cuisine', completed: false },
-  { id: '5', task: 'Vider poubelles', completed: false },
-  { id: '6', task: 'Vérifier stocks (PQ, savon)', completed: false },
-];
+const getCleaningChecklist = (): ChecklistItem[] => {
+  const saved = localStorage.getItem('gitemaster_cleaning_checklist');
+  if (saved) {
+    try {
+      const items = JSON.parse(saved);
+      return items.map((item: any, index: number) => ({
+        id: String(index + 1),
+        task: item.text,
+        completed: false
+      }));
+    } catch {
+      // Fallback si parsing échoue
+    }
+  }
+  
+  // Checklist par défaut
+  return [
+    { id: '1', task: 'Changer les draps', completed: false },
+    { id: '2', task: 'Aspirer et laver le sol', completed: false },
+    { id: '3', task: 'Nettoyer salle de bain', completed: false },
+    { id: '4', task: 'Nettoyer cuisine', completed: false },
+    { id: '5', task: 'Vider poubelles', completed: false },
+    { id: '6', task: 'Vérifier stocks (PQ, savon)', completed: false },
+  ];
+};
 
 const CleaningModule: React.FC = () => {
   const [tasks, setTasks] = useState<CleaningTask[]>([]);
   const [showModal, setShowModal] = useState(false);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [selectedTask, setSelectedTask] = useState<CleaningTask | null>(null);
   const [formData, setFormData] = useState({
     guestName: '',
@@ -90,7 +108,7 @@ const CleaningModule: React.FC = () => {
       assignedTo: formData.assignedTo || undefined,
       assignedPhone: formData.assignedPhone || undefined,
       cost: formData.cost,
-      checklist: DEFAULT_CHECKLIST.map(item => ({ ...item })),
+      checklist: getCleaningChecklist(),
       notes: formData.notes || undefined
     };
     

@@ -10,6 +10,7 @@ import SupabaseService from '../services/SupabaseService';
 import StripeService from '../services/StripeService';
 import AIService from '../services/AIService';
 import PropertyManager from './PropertyManager';
+import CleaningChecklistManager from './CleaningChecklistManager';
 
 type TabType = 'general' | 'properties' | 'pricing' | 'reviews' | 'api' | 'integrations' | 'security' | 'data';
 
@@ -141,6 +142,7 @@ export const AdminPage: React.FC = () => {
     { id: 'properties', label: 'Propriétés', icon: Home },
     { id: 'pricing', label: 'Tarification', icon: DollarSign },
     { id: 'reviews', label: 'Liens Avis', icon: Star },
+    { id: 'cleaning', label: 'Ménage', icon: CheckCircle },
     { id: 'api', label: 'API & Envois', icon: Send },
     { id: 'integrations', label: 'Intégrations', icon: Cloud },
     { id: 'security', label: 'Sécurité', icon: Shield },
@@ -1057,6 +1059,13 @@ export const AdminPage: React.FC = () => {
                 Se déconnecter
               </button>
             </div>
+          </div>
+        )}
+
+        {/* Cleaning Tab */}
+        {activeTab === 'cleaning' && (
+          <div className="space-y-6">
+            <CleaningChecklistManager />
           </div>
         )}
 

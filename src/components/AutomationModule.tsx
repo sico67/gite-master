@@ -403,7 +403,14 @@ const AutomationModule: React.FC = () => {
         <h2 className="text-xl font-bold text-gray-900 mb-4">Templates de messages</h2>
         <div className="grid md:grid-cols-2 gap-4">
           {templates.map(template => (
-            <div key={template.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+            <div 
+              key={template.id} 
+              className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer hover:border-blue-300"
+              onClick={() => {
+                setSelectedTemplate(template);
+                setShowTemplateModal(true);
+              }}
+            >
               <div className="flex items-start justify-between mb-3">
                 <div>
                   <h3 className="font-bold text-gray-900">{template.name}</h3>
@@ -412,7 +419,8 @@ const AutomationModule: React.FC = () => {
                   </p>
                 </div>
                 <button
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.stopPropagation();
                     setSelectedTemplate(template);
                     setShowTemplateModal(true);
                   }}
@@ -465,28 +473,88 @@ const AutomationModule: React.FC = () => {
                 {selectedTemplate ? 'Modifier le template' : 'Nouveau template'}
               </h3>
               <button
-                onClick={() => setShowTemplateModal(false)}
+                onClick={() => {
+                  setShowTemplateModal(false);
+                  setSelectedTemplate(null);
+                }}
                 className="p-2 hover:bg-gray-100 rounded-lg"
               >
                 <X size={24} />
               </button>
             </div>
 
-            <div className="p-6">
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
-                <p className="text-sm text-yellow-800">
-                  <strong>Note :</strong> Cette fonctionnalité sera disponible dans la version finale. 
-                  Pour l'instant, les templates par défaut sont utilisés.
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Nom du template
+                </label>
+                <input
+                  type="text"
+                  value={selectedTemplate?.name || ''}
+                  onChange={(e) => {
+                    if (selectedTemplate) {
+                      setSelectedTemplate({ ...selectedTemplate, name: e.target.value });
+                    }
+                  }}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  placeholder="Ex: Message de bienvenue"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Contenu du message
+                </label>
+                <textarea
+                  value={selectedTemplate?.content || ''}
+                  onChange={(e) => {
+                    if (selectedTemplate) {
+                      setSelectedTemplate({ ...selectedTemplate, content: e.target.value });
+                    }
+                  }}
+                  rows={10}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 font-mono text-sm"
+                  placeholder="Bonjour {{guestName}}, ..."
+                />
+                <p className="mt-2 text-sm text-gray-500">
+                  Variables disponibles : {selectedTemplate?.variables.join(', ') || 'Aucune'}
+                </p>
+              </div>
+
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <p className="text-sm text-blue-800">
+                  <strong>💡 Astuce :</strong> Utilisez les variables entre doubles accolades, 
+                  par exemple : <code className="bg-white px-2 py-1 rounded">{'{{guestName}}'}</code>
                 </p>
               </div>
             </div>
 
-            <div className="p-6 border-t border-gray-200">
+            <div className="p-6 border-t border-gray-200 flex gap-3">
               <button
-                onClick={() => setShowTemplateModal(false)}
-                className="w-full px-6 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300"
+                onClick={() => {
+                  setShowTemplateModal(false);
+                  setSelectedTemplate(null);
+                }}
+                className="flex-1 px-6 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300"
               >
-                Fermer
+                Annuler
+              </button>
+              <button
+                onClick={() => {
+                  if (selectedTemplate) {
+                    const updatedTemplates = templates.map(t => 
+                      t.id === selectedTemplate.id ? selectedTemplate : t
+                    );
+                    setTemplates(updatedTemplates);
+                    localStorage.setItem('gitemaster_automation_templates', JSON.stringify(updatedTemplates));
+                    setShowTemplateModal(false);
+                    setSelectedTemplate(null);
+                    alert('✅ Template enregistré !');
+                  }
+                }}
+                className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              >
+                Enregistrer
               </button>
             </div>
           </div>

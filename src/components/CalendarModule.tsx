@@ -43,14 +43,34 @@ const CalendarModule: React.FC = () => {
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [properties, setProperties] = useState<any[]>([]);
 
   useEffect(() => {
     loadBookings();
+    loadProperties();
   }, []);
 
   const loadBookings = () => {
     const savedBookings = DataService.getBookings();
     setBookings(savedBookings);
+  };
+
+  const loadProperties = () => {
+    // Importer PropertyService dynamiquement
+    import('../services/PropertyService').then(({ default: PropertyService }) => {
+      const allProps = PropertyService.getAllProperties();
+      setProperties(allProps);
+      
+      // Si aucune propriété sélectionnée, prendre la première active
+      if (formData.propertyId === 'p1' && allProps.length > 0) {
+        const firstProp = allProps[0];
+        setFormData(prev => ({
+          ...prev,
+          propertyId: firstProp.id,
+          propertyName: firstProp.name
+        }));
+      }
+    });
   };
 
   const [formData, setFormData] = useState<Partial<Booking>>({
@@ -66,10 +86,6 @@ const CalendarModule: React.FC = () => {
     guests: 2,
     notes: ''
   });
-
-  const properties = [
-    { id: 'p1', name: 'Villa Exemple', pricePerNight: 140 }
-  ];
 
   const getDaysInMonth = (date: Date) => {
     const year = date.getFullYear();
@@ -462,7 +478,7 @@ const CalendarModule: React.FC = () => {
                     >
                       {properties.map(property => (
                         <option key={property.id} value={property.id}>
-                          {property.name} ({property.pricePerNight}€/nuit)
+                          {property.name} ({property.pricing?.basePrice || 0}€/nuit)
                         </option>
                       ))}
                     </select>

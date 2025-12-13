@@ -159,15 +159,51 @@ export const AdminPage: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
+    <div className="min-h-screen bg-gray-50 flex">
+      {/* Sidebar gauche */}
+      <div className="w-64 bg-white border-r border-gray-200 flex-shrink-0">
+        <div className="sticky top-0 h-screen overflow-y-auto">
+          {/* Logo/Title */}
+          <div className="p-6 border-b border-gray-200">
             <div className="flex items-center gap-3">
-              <Settings className="text-blue-600" size={28} />
-              <h1 className="text-2xl font-bold text-gray-900">Administration</h1>
+              <Settings className="text-blue-600" size={24} />
+              <h1 className="text-lg font-bold text-gray-900">Admin</h1>
             </div>
+          </div>
+
+          {/* Navigation */}
+          <nav className="p-3">
+            <div className="space-y-1">
+              {tabs.map(tab => {
+                const Icon = tab.icon;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id as TabType)}
+                    className={`w-full px-4 py-3 flex items-center gap-3 rounded-lg transition-all text-left ${
+                      activeTab === tab.id
+                        ? 'bg-blue-600 text-white shadow-md'
+                        : 'text-gray-700 hover:bg-gray-100'
+                    }`}
+                  >
+                    <Icon size={20} />
+                    <span className="font-medium">{tab.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </nav>
+        </div>
+      </div>
+
+      {/* Main content */}
+      <div className="flex-1 overflow-y-auto">
+        {/* Header */}
+        <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
+          <div className="px-8 py-4 flex justify-between items-center">
+            <h2 className="text-xl font-bold text-gray-900">
+              {tabs.find(t => t.id === activeTab)?.label || 'Paramètres'}
+            </h2>
             
             <button
               onClick={handleSave}
@@ -179,7 +215,7 @@ export const AdminPage: React.FC = () => {
           </div>
           
           {saveMessage && (
-            <div className={`mb-4 p-3 rounded-lg flex items-center gap-2 ${
+            <div className={`mx-8 mb-4 p-3 rounded-lg flex items-center gap-2 ${
               saveMessage.type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'
             }`}>
               {saveMessage.type === 'success' ? <Check size={18} /> : <AlertCircle size={18} />}
@@ -187,35 +223,9 @@ export const AdminPage: React.FC = () => {
             </div>
           )}
         </div>
-      </div>
 
-      {/* Tabs */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex gap-1 overflow-x-auto">
-            {tabs.map(tab => {
-              const Icon = tab.icon;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id as TabType)}
-                  className={`px-4 py-3 flex items-center gap-2 border-b-2 transition-colors whitespace-nowrap ${
-                    activeTab === tab.id
-                      ? 'border-blue-600 text-blue-600 font-medium'
-                      : 'border-transparent text-gray-600 hover:text-gray-900'
-                  }`}
-                >
-                  <Icon size={18} />
-                  <span>{tab.label}</span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Content */}
+        <div className="p-8">
         
         {/* General Tab */}
         {activeTab === 'general' && (
@@ -1292,8 +1302,9 @@ export const AdminPage: React.FC = () => {
           </div>
         )}
 
-      </div>
-    </div>
+        </div> {/* Fin content div p-8 */}
+      </div> {/* Fin main content flex-1 */}
+    </div> {/* Fin layout flex */}
   );
 };
 

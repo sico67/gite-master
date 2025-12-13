@@ -22,9 +22,11 @@ const PropertyManager: React.FC = () => {
   };
 
   const handleEditProperty = (property: Property) => {
-    setEditingProperty(property);
-    setCurrentTab('edit');
-  };
+  localStorage.setItem('gitemaster_current_property_id', property.id);
+  setEditingProperty(property);
+  setCurrentTab('edit');
+};
+
 
   const handleSaveProperty = () => {
     if (!editingProperty) return;

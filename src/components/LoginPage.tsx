@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import { Lock, Mail, Eye, EyeOff, Sparkles, TrendingUp, Calendar, Users, Zap, Shield, Clock } from 'lucide-react';
 
 interface LoginPageProps {
-  onLogin: (username: string, password: string) => boolean;
+  onLogin: (username: string, password: string, rememberMe: boolean) => boolean;
 }
 
 const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const [error, setError] = useState('');
 
@@ -18,7 +19,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
     setIsAnimating(true);
     
     setTimeout(() => {
-      const success = onLogin(username, password);
+      const success = onLogin(username, password, rememberMe);
       if (!success) {
         setError('Identifiants incorrects');
         setIsAnimating(false);
@@ -163,7 +164,12 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
                 {/* Remember & Forgot */}
                 <div className="flex items-center justify-between text-sm">
                   <label className="flex items-center text-gray-300 cursor-pointer group">
-                    <input type="checkbox" className="w-4 h-4 rounded border-gray-600 bg-white/5 text-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 transition-all" />
+                    <input 
+                      type="checkbox" 
+                      checked={rememberMe}
+                      onChange={(e) => setRememberMe(e.target.checked)}
+                      className="w-4 h-4 rounded border-gray-600 bg-white/5 text-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 transition-all" 
+                    />
                     <span className="ml-2 group-hover:text-white transition-colors">Se souvenir de moi</span>
                   </label>
                   <a href="#" className="text-blue-400 hover:text-blue-300 transition-colors">

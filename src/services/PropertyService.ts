@@ -106,10 +106,17 @@ class PropertyService {
       this.properties = saved;
       console.log('✅ PropertyService: Loaded', saved.length, 'properties from storage');
     } else {
-      // Première utilisation - créer propriété démo
-      console.log('⚠️ PropertyService: No properties found, creating default');
-      this.properties = [this.getDefaultProperty()];
-      this.saveProperties();
+      // Ne créer Villa Exemple QUE si l'onboarding n'a jamais été fait
+      const onboardingCompleted = localStorage.getItem('gitemaster_onboarding_completed');
+      
+      if (!onboardingCompleted) {
+        console.log('⚠️ PropertyService: First time, creating demo property');
+        this.properties = [this.getDefaultProperty()];
+        this.saveProperties();
+      } else {
+        console.log('✅ PropertyService: Onboarding done, no properties yet');
+        this.properties = [];
+      }
     }
     return this.properties;
   }

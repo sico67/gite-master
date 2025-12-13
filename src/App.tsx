@@ -44,8 +44,8 @@ function App() {
     }
   }, []);
 
-  const handleLogin = (username: string, password: string): boolean => {
-    if (AuthService.loginWithCredentials(username, password)) {
+  const handleLogin = (username: string, password: string, rememberMe: boolean = false): boolean => {
+    if (AuthService.loginWithCredentials(username, password, rememberMe)) {
       setIsUnlocked(true);
       return true;
     }

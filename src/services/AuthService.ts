@@ -71,12 +71,12 @@ class AuthService {
     return false;
   }
 
-  loginWithCredentials(username: string, password: string): boolean {
+  loginWithCredentials(username: string, password: string, rememberMe: boolean = false): boolean {
     if (this.verifyCredentials(username, password)) {
       this.session = {
         isAuthenticated: true,
         lastActivity: Date.now(),
-        rememberMe: false, // Session temporaire
+        rememberMe, // Utiliser la valeur passée
       };
       this.saveSession();
       return true;

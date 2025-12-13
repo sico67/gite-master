@@ -176,15 +176,15 @@ export const AdminPage: React.FC = () => {
             <div className="space-y-1">
               {tabs.map(tab => {
                 const Icon = tab.icon;
+                const isActive = activeTab === tab.id;
                 return (
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id as TabType)}
-                    className={`w-full px-4 py-3 flex items-center gap-3 rounded-lg transition-all text-left ${
-                      activeTab === tab.id
-                        ? 'bg-blue-600 text-white shadow-md'
-                        : 'text-gray-700 hover:bg-gray-100'
-                    }`}
+                    className={isActive 
+                      ? 'w-full px-4 py-3 flex items-center gap-3 rounded-lg transition-all text-left bg-blue-600 text-white shadow-md'
+                      : 'w-full px-4 py-3 flex items-center gap-3 rounded-lg transition-all text-left text-gray-700 hover:bg-gray-100'
+                    }
                   >
                     <Icon size={20} />
                     <span className="font-medium">{tab.label}</span>
@@ -215,9 +215,11 @@ export const AdminPage: React.FC = () => {
           </div>
           
           {saveMessage && (
-            <div className={`mx-8 mb-4 p-3 rounded-lg flex items-center gap-2 ${
-              saveMessage.type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'
-            }`}>
+            <div className={
+              saveMessage.type === 'success' 
+                ? 'mx-8 mb-4 p-3 rounded-lg flex items-center gap-2 bg-green-50 text-green-800'
+                : 'mx-8 mb-4 p-3 rounded-lg flex items-center gap-2 bg-red-50 text-red-800'
+            }>
               {saveMessage.type === 'success' ? <Check size={18} /> : <AlertCircle size={18} />}
               <span>{saveMessage.text}</span>
             </div>

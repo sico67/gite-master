@@ -1,55 +1,33 @@
-import { useState } from 'react';
-import {
-  Home,
-  Settings,
-  BookOpen,
-  Calendar,
-  Image,
-  FileText,
-  Users
-} from 'lucide-react';
-
+import React, { useState } from 'react';
+import { Home, Plus, Edit, Copy, Trash2, Eye, EyeOff, Save, X, Upload } from 'lucide-react';
 import PropertyManager from './PropertyManager';
-import WelcomeGuideModule from './WelcomeGuideModule';
-import CalendarModule from './CalendarModule';
-import MediaModule from './MediaModule';
-import DocumentsModule from './DocumentsModule';
-import GuestsModule from './GuestsModule';
 
-export type TabType =
-  | 'properties'
-  | 'welcome'
-  | 'calendar'
-  | 'media'
-  | 'documents'
-  | 'guests';
+// Définition des onglets
+type TabType = 'dashboard' | 'properties' | 'media' | 'documents' | 'guests';
 
-const tabs = [
-  { id: 'properties', label: 'Biens', icon: Home },
-  { id: 'welcome', label: 'Livret d’accueil', icon: BookOpen },
-  { id: 'calendar', label: 'Calendrier', icon: Calendar },
-  { id: 'media', label: 'Médias', icon: Image },
-  { id: 'documents', label: 'Documents', icon: FileText },
-  { id: 'guests', label: 'Voyageurs', icon: Users }
+const tabs: { id: TabType; label: string; icon: React.FC<any> }[] = [
+  { id: 'dashboard', label: 'Tableau de bord', icon: Home },
+  { id: 'properties', label: 'Propriétés', icon: Plus },
+  { id: 'media', label: 'Médias', icon: Upload },
+  { id: 'documents', label: 'Documents', icon: Save },
+  { id: 'guests', label: 'Invités', icon: Edit },
 ];
 
-export default function AdminPage() {
-  const [activeTab, setActiveTab] = useState<TabType>('properties');
+const AdminPage: React.FC = () => {
+  const [activeTab, setActiveTab] = useState<TabType>('dashboard');
 
   const renderContent = () => {
     switch (activeTab) {
+      case 'dashboard':
+        return <div>Bienvenue sur le tableau de bord</div>;
       case 'properties':
         return <PropertyManager />;
-      case 'welcome':
-        return <WelcomeGuideModule />;
-      case 'calendar':
-        return <CalendarModule />;
       case 'media':
-        return <MediaModule />;
+        return <div>Module Media (placeholder)</div>;
       case 'documents':
-        return <DocumentsModule />;
+        return <div>Module Documents (placeholder)</div>;
       case 'guests':
-        return <GuestsModule />;
+        return <div>Module Guests (placeholder)</div>;
       default:
         return null;
     }
@@ -57,28 +35,20 @@ export default function AdminPage() {
 
   return (
     <div className="flex min-h-screen bg-gray-100">
-
-      {/* SIDEBAR */}
+      {/* Sidebar verticale */}
       <aside className="w-64 bg-white border-r border-gray-200 flex-shrink-0">
-        <div className="p-6 font-bold text-xl border-b">
-          Admin
-        </div>
-
+        <div className="p-6 font-bold text-xl border-b">Administration</div>
         <nav className="p-2 space-y-1">
-          {tabs.map(tab => {
+          {tabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
-
             return (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id as TabType)}
+                onClick={() => setActiveTab(tab.id)}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition
-                  ${
-                    isActive
-                      ? 'bg-blue-600 text-white'
-                      : 'text-gray-700 hover:bg-gray-100'
-                  }`}
+                  ${isActive ? 'bg-blue-600 text-white' : 'text-gray-700 hover:bg-gray-100'}
+                `}
               >
                 <Icon size={18} />
                 <span>{tab.label}</span>
@@ -88,10 +58,10 @@ export default function AdminPage() {
         </nav>
       </aside>
 
-      {/* CONTENT */}
-      <main className="flex-1 p-8 overflow-y-auto">
-        {renderContent()}
-      </main>
+      {/* Contenu principal */}
+      <main className="flex-1 p-8">{renderContent()}</main>
     </div>
   );
-}
+};
+
+export default AdminPage;

@@ -1017,32 +1017,85 @@ export const AdminPage: React.FC = () => {
                 <div className="bg-blue-50 border-l-4 border-blue-400 p-4 rounded">
                   <p className="font-medium text-blue-900 mb-1">Identifiants actuels :</p>
                   <p className="text-sm text-blue-800">👤 Username: <code className="font-mono bg-white px-2 py-1 rounded">admin</code></p>
-                  <p className="text-sm text-blue-800">🔑 Password: <code className="font-mono bg-white px-2 py-1 rounded">admin123</code></p>
+                  <p className="text-sm text-blue-800">🔑 Password: <code className="font-mono bg-white px-2 py-1 rounded">•••••••</code></p>
                 </div>
+
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Nouveau nom d'utilisateur
+                    </label>
+                    <input
+                      type="text"
+                      id="newUsername"
+                      placeholder="admin"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Nouveau mot de passe
+                    </label>
+                    <input
+                      type="password"
+                      id="newPassword"
+                      placeholder="Minimum 6 caractères"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => {
+                    const usernameInput = document.getElementById('newUsername') as HTMLInputElement;
+                    const passwordInput = document.getElementById('newPassword') as HTMLInputElement;
+                    
+                    const newUsername = usernameInput?.value.trim();
+                    const newPassword = passwordInput?.value.trim();
+                    
+                    if (!newUsername && !newPassword) {
+                      alert('⚠️ Veuillez remplir au moins un champ');
+                      return;
+                    }
+                    
+                    if (newPassword && newPassword.length < 6) {
+                      alert('⚠️ Le mot de passe doit contenir au moins 6 caractères');
+                      return;
+                    }
+                    
+                    if (!confirm('⚠️ Confirmer la modification des identifiants ? Notez-les bien, ils ne peuvent pas être récupérés !')) {
+                      return;
+                    }
+                    
+                    // Sauvegarder dans localStorage
+                    const credentials = JSON.parse(localStorage.getItem('gitemaster_credentials') || '{"username":"admin","password":"admin123"}');
+                    
+                    if (newUsername) credentials.username = newUsername;
+                    if (newPassword) credentials.password = newPassword;
+                    
+                    localStorage.setItem('gitemaster_credentials', JSON.stringify(credentials));
+                    
+                    alert(`✅ Identifiants modifiés avec succès !
+                    
+Nouveau username: ${credentials.username}
+Nouveau password: ${newPassword || '(inchangé)'}
+
+⚠️ Notez-les bien, vous en aurez besoin à la prochaine connexion !`);
+                    
+                    // Reset inputs
+                    usernameInput.value = '';
+                    passwordInput.value = '';
+                  }}
+                  className="w-full md:w-auto px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                >
+                  💾 Enregistrer les nouveaux identifiants
+                </button>
 
                 <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
-                  <p className="font-bold text-yellow-900 mb-2">⚠️ Prochaine version</p>
+                  <p className="font-bold text-yellow-900 mb-2">⚠️ Important</p>
                   <p className="text-sm text-yellow-800">
-                    La modification des identifiants sera disponible dans la prochaine mise à jour avec authentification sécurisée.
+                    Notez vos nouveaux identifiants dans un endroit sûr. Il n'y a pas de récupération possible !
                   </p>
-                </div>
-
-                <div className="bg-gray-50 rounded-lg p-4">
-                  <p className="text-sm text-gray-700 mb-3"><strong>Pour l'instant, protégez votre accès en :</strong></p>
-                  <ul className="space-y-2 text-sm text-gray-700">
-                    <li className="flex items-start gap-2">
-                      <span>🔒</span>
-                      <span>Ne partageant pas vos identifiants</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span>💻</span>
-                      <span>Utilisant un navigateur privé sur ordinateurs partagés</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span>📱</span>
-                      <span>Activant le verrouillage de votre appareil</span>
-                    </li>
-                  </ul>
                 </div>
               </div>
             </div>

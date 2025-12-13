@@ -54,7 +54,18 @@ class AuthService {
   }
 
   verifyCredentials(username: string, password: string): boolean {
-    // Credentials par défaut
+    // Charger credentials depuis localStorage
+    try {
+      const stored = localStorage.getItem('gitemaster_credentials');
+      if (stored) {
+        const credentials = JSON.parse(stored);
+        return (username === credentials.username && password === credentials.password);
+      }
+    } catch (error) {
+      console.error('Error loading credentials:', error);
+    }
+    
+    // Credentials par défaut si rien en localStorage
     return (username === 'admin' && password === 'admin123');
   }
 

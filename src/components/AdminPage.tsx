@@ -12,7 +12,7 @@ import AIService from '../services/AIService';
 import PropertyManager from './PropertyManager';
 import CleaningChecklistManager from './CleaningChecklistManager';
 
-type TabType = 'general' | 'properties' | 'pricing' | 'reviews' | 'cleaning' | 'api' | 'integrations' | 'security' | 'data';
+type TabType = 'general' | 'properties' | 'reviews' | 'cleaning' | 'api' | 'integrations' | 'security' | 'data';
 
 export const AdminPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('general');
@@ -140,7 +140,6 @@ export const AdminPage: React.FC = () => {
   const tabs = [
     { id: 'general', label: 'Général', icon: Settings },
     { id: 'properties', label: 'Propriétés', icon: Home },
-    { id: 'pricing', label: 'Tarification', icon: DollarSign },
     { id: 'reviews', label: 'Liens Avis', icon: Star },
     { id: 'cleaning', label: 'Ménage', icon: CheckCircle },
     { id: 'api', label: 'API & Envois', icon: Send },
@@ -159,15 +158,49 @@ export const AdminPage: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            <div className="flex items-center gap-3">
-              <Settings className="text-blue-600" size={28} />
-              <h1 className="text-2xl font-bold text-gray-900">Administration</h1>
-            </div>
+    <div className="min-h-screen bg-gray-50 flex">
+      {/* Sidebar verticale gauche */}
+      <div className="w-64 bg-white border-r border-gray-200 flex-shrink-0 sticky top-0 h-screen overflow-y-auto">
+        {/* Header Sidebar */}
+        <div className="p-6 border-b border-gray-200">
+          <div className="flex items-center gap-3">
+            <Settings className="text-blue-600" size={24} />
+            <h1 className="text-lg font-bold text-gray-900">Admin</h1>
+          </div>
+        </div>
+
+        {/* Navigation tabs verticale */}
+        <nav className="p-3">
+          <div className="space-y-1">
+            {tabs.map(tab => {
+              const Icon = tab.icon;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id as TabType)}
+                  className={`w-full px-4 py-3 flex items-center gap-3 rounded-lg transition-all ${
+                    activeTab === tab.id
+                      ? 'bg-blue-600 text-white shadow-md'
+                      : 'text-gray-700 hover:bg-gray-100'
+                  }`}
+                >
+                  <Icon size={20} />
+                  <span className="font-medium">{tab.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </nav>
+      </div>
+
+      {/* Main content */}
+      <div className="flex-1 overflow-y-auto">
+        {/* Top bar */}
+        <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
+          <div className="px-8 py-4 flex justify-between items-center">
+            <h2 className="text-xl font-bold text-gray-900">
+              {tabs.find(t => t.id === activeTab)?.label || 'Paramètres'}
+            </h2>
             
             <button
               onClick={handleSave}
@@ -179,7 +212,7 @@ export const AdminPage: React.FC = () => {
           </div>
           
           {saveMessage && (
-            <div className={`mb-4 p-3 rounded-lg flex items-center gap-2 ${
+            <div className={`mx-8 mb-4 p-3 rounded-lg flex items-center gap-2 ${
               saveMessage.type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'
             }`}>
               {saveMessage.type === 'success' ? <Check size={18} /> : <AlertCircle size={18} />}
@@ -187,35 +220,9 @@ export const AdminPage: React.FC = () => {
             </div>
           )}
         </div>
-      </div>
 
-      {/* Tabs */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex gap-1 overflow-x-auto">
-            {tabs.map(tab => {
-              const Icon = tab.icon;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id as TabType)}
-                  className={`px-4 py-3 flex items-center gap-2 border-b-2 transition-colors whitespace-nowrap ${
-                    activeTab === tab.id
-                      ? 'border-blue-600 text-blue-600 font-medium'
-                      : 'border-transparent text-gray-600 hover:text-gray-900'
-                  }`}
-                >
-                  <Icon size={18} />
-                  <span>{tab.label}</span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Content */}
+        <div className="p-8">
         
         {/* General Tab */}
         {activeTab === 'general' && (
@@ -279,55 +286,6 @@ export const AdminPage: React.FC = () => {
         {/* Properties Tab */}
         {activeTab === 'properties' && (
           <PropertyManager />
-        )}
-
-        {/* Pricing Tab */}
-        {activeTab === 'pricing' && (
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Configuration des Tarifs</h2>
-            
-            <div className="grid md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Prix par défaut (€/nuit)</label>
-                <input
-                  type="number"
-                  value={settings.pricing.defaultRate}
-                  onChange={(e) => updateSettings('pricing.defaultRate', Number(e.target.value))}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Frais de ménage (€)</label>
-                <input
-                  type="number"
-                  value={settings.pricing.cleaningFee}
-                  onChange={(e) => updateSettings('pricing.cleaningFee', Number(e.target.value))}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Caution (€)</label>
-                <input
-                  type="number"
-                  value={settings.pricing.deposit}
-                  onChange={(e) => updateSettings('pricing.deposit', Number(e.target.value))}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Durée minimum (nuits)</label>
-                <input
-                  type="number"
-                  value={settings.pricing.minimumStay}
-                  onChange={(e) => updateSettings('pricing.minimumStay', Number(e.target.value))}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-            </div>
-          </div>
         )}
 
         {/* Reviews Tab */}
@@ -1345,8 +1303,9 @@ Nouveau password: ${newPassword || '(inchangé)'}
           </div>
         )}
 
-      </div>
-    </div>
+        </div> {/* Fin content */}
+      </div> {/* Fin main */}
+    </div> {/* Fin layout */}
   );
 };
 

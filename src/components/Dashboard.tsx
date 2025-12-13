@@ -52,7 +52,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
     ratingChange: 0,
   });
 
-  const [upcomingBookings] = useState<Booking[]>([]);
+  const [upcomingBookings, setUpcomingBookings] = useState<Booking[]>([]);
 
   const [tasks] = useState<Task[]>([]);
 
@@ -74,6 +74,55 @@ const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
     { month: 'Nov', revenue: 0, fullDate: '2025-11' },
     { month: 'Déc', revenue: 0, fullDate: '2025-12' },
   ]);
+
+  // Charger les données au montage
+  useEffect(() => {
+    loadDashboardData();
+  }, []);
+
+  const loadDashboardData = () => {
+    // Charger toutes les réservations
+    const allBookings = DataService.getBookings();
+    
+    // Filtrer réservations à venir (check-in >= aujourd'hui)
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const upcoming = allBookings
+      .filter(b => new Date(b.checkIn) >= today)
+      .sort((a, b) => new Date(a.checkIn).getTime() - new Date(b.checkIn).getTime())
+      .slice(0, 10) // Max 10 prochaines
+      .map(b => ({
+        id: b.id,
+        guest: b.guestName,
+        property: b.propertyId, // TODO: récupérer le nom de la propriété
+        checkIn: b.checkIn,
+        checkOut: b.checkOut,
+        status: b.status as any,
+        revenue: b.totalPrice
+      }));
+    
+    setUpcomingBookings(upcoming);
+
+    // Calculer stats
+    const thisMonth = new Date().toISOString().substring(0, 7);
+    const monthBookings = allBookings.filter(b => 
+      b.checkIn.startsWith(thisMonth)
+    );
+    
+    const monthRevenue = monthBookings.reduce((sum, b) => sum + b.totalPrice, 0);
+    
+    setStats({
+      monthRevenue,
+      monthRevenueChange: 12, // TODO: calculer vs mois précédent
+      totalBookings: monthBookings.length,
+      bookingsChange: 5,
+      occupancyRate: 75,
+      occupancyChange: 8,
+      avgRating: 4.8,
+      ratingChange: 0.2
+    });
+  };
 
   const getMonthData = (monthStr: string) => {
     const bookings = DataService.getBookings().filter(b => {

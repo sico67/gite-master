@@ -29,66 +29,111 @@ const GuestGuidePublic: React.FC<GuestGuidePublicProps> = ({ propertyId = 'demo'
   }, [propertyId]);
 
   const loadGuide = () => {
-    // Charger depuis localStorage ou API
-    const saved = localStorage.getItem('gitemaster_welcome_guide');
-    if (saved) {
-      setGuide(JSON.parse(saved));
-    } else {
-      // Guide démo
-      setGuide({
-        propertyName: 'Villa Exemple',
-        address: '123 Rue de la Plage, 06000 Nice',
-        wifi: { ssid: 'Villa-WiFi', password: 'Bienvenue2025!' },
-        access: {
-          gateCode: '1234A',
-          keyBoxCode: '5678',
-          instructions: 'Le portail se trouve à gauche. La boîte à clés est fixée sur le mur à droite.'
-        },
-        checkIn: '16:00',
-        checkOut: '11:00',
-        equipment: [
-          '🍳 Cuisine équipée complète',
-          '📺 TV connectée Netflix',
-          '❄️ Climatisation',
-          '🧺 Machine à laver',
-          '🏊 Piscine chauffée',
-          '🚗 Parking privé 2 places'
-        ],
-        instructions: [
-          'Chauffage/Clim : Télécommande dans chaque pièce, température recommandée 21°C',
-          'WiFi : Nom et mot de passe affichés dans le salon',
-          'TV : Appuyez sur SOURCE pour passer en HDMI',
-          'Machine à laver : Programme "Coton 40°" recommandé'
-        ],
-        contacts: {
-          host: '+33 6 12 34 56 78',
-          hostName: 'Marie',
-          emergency: '15 (Médecin) | 17 (Police) | 18 (Pompiers)'
-        },
-        activities: [
-          { icon: '🏖️', name: 'Plage', distance: '15 min à pied' },
-          { icon: '🍴', name: 'Restaurant Le Bistrot', distance: '5 min' },
-          { icon: '🛒', name: 'Super U', distance: '10 min' },
-          { icon: '🎭', name: 'Vieux Nice', distance: '20 min' },
-          { icon: '⛰️', name: 'Mont Boron', distance: '30 min' }
-        ],
-        checkoutList: [
-          'Fermer toutes les portes et fenêtres',
-          'Éteindre toutes les lumières',
-          'Éteindre chauffage/climatisation',
-          'Déposer les clés dans la boîte',
-          'Sortir les poubelles',
-          'Fermer le portail'
-        ],
-        rules: [
-          'Non fumeur (intérieur)',
-          'Animaux non acceptés',
-          'Respect du voisinage (silence 22h-8h)',
-          'Nombre maximum de voyageurs : 6'
-        ]
-      });
+    // Charger la propriété depuis PropertyService
+    const properties = JSON.parse(localStorage.getItem('gitemaster_properties') || '[]');
+    const property = properties.find((p: any) => p.id === propertyId) || properties[0];
+    
+    if (!property) {
+      // Pas de propriété, guide démo
+      setGuide(getDemoGuide());
+      setLoading(false);
+      return;
     }
+
+    // Construire le guide depuis la propriété
+    const guideData = {
+      propertyName: property.name || 'Villa Exemple',
+      address: property.address ? 
+        `${property.address.street}, ${property.address.zipCode} ${property.address.city}` :
+        '123 Rue de la Plage, 06000 Nice',
+      wifi: property.wifi || { ssid: 'Villa-WiFi', password: 'Demander au propriétaire' },
+      access: property.access || {
+        gateCode: 'Demander au propriétaire',
+        keyBoxCode: 'Demander au propriétaire',
+        instructions: 'Instructions d\'accès à définir'
+      },
+      checkIn: property.checkInTime || '16:00',
+      checkOut: property.checkOutTime || '11:00',
+      equipment: property.amenities || [
+        '🍳 Cuisine équipée',
+        '📺 TV',
+        '❄️ Climatisation'
+      ],
+      instructions: property.instructions || [
+        'Chauffage/Clim : Télécommande dans chaque pièce',
+        'WiFi : Nom et mot de passe affichés',
+        'TV : Appuyez sur SOURCE'
+      ],
+      contacts: property.contacts || {
+        host: 'À définir',
+        hostName: 'Propriétaire',
+        emergency: '15 (Médecin) | 17 (Police) | 18 (Pompiers)'
+      },
+      activities: property.activities || [],
+      checkoutList: property.checkoutList || [
+        'Fermer portes et fenêtres',
+        'Éteindre lumières',
+        'Déposer les clés'
+      ]
+    };
+
+    setGuide(guideData);
     setLoading(false);
+  };
+
+  const getDemoGuide = () => {
+    return {
+      propertyName: 'Villa Exemple',
+      address: '123 Rue de la Plage, 06000 Nice',
+      wifi: { ssid: 'Villa-WiFi', password: 'Bienvenue2025!' },
+      access: {
+        gateCode: '1234A',
+        keyBoxCode: '5678',
+        instructions: 'Le portail se trouve à gauche. La boîte à clés est fixée sur le mur à droite.'
+      },
+      checkIn: '16:00',
+      checkOut: '11:00',
+      equipment: [
+        '🍳 Cuisine équipée complète',
+        '📺 TV connectée Netflix',
+        '❄️ Climatisation',
+        '🧺 Machine à laver',
+        '🏊 Piscine chauffée',
+        '🚗 Parking privé 2 places'
+      ],
+      instructions: [
+        'Chauffage/Clim : Télécommande dans chaque pièce, température recommandée 21°C',
+        'WiFi : Nom et mot de passe affichés dans le salon',
+        'TV : Appuyez sur SOURCE pour passer en HDMI',
+        'Machine à laver : Programme "Coton 40°" recommandé'
+      ],
+      contacts: {
+        host: '+33 6 12 34 56 78',
+        hostName: 'Marie',
+        emergency: '15 (Médecin) | 17 (Police) | 18 (Pompiers)'
+      },
+      activities: [
+        { icon: '🏖️', name: 'Plage', distance: '15 min à pied' },
+        { icon: '🍴', name: 'Restaurant Le Bistrot', distance: '5 min' },
+        { icon: '🛒', name: 'Super U', distance: '10 min' },
+        { icon: '🎭', name: 'Vieux Nice', distance: '20 min' },
+        { icon: '⛰️', name: 'Mont Boron', distance: '30 min' }
+      ],
+      checkoutList: [
+        'Fermer toutes les portes et fenêtres',
+        'Éteindre toutes les lumières',
+        'Éteindre chauffage/climatisation',
+        'Déposer les clés dans la boîte',
+        'Sortir les poubelles',
+        'Fermer le portail'
+      ],
+      rules: [
+        'Non fumeur (intérieur)',
+        'Animaux non acceptés',
+        'Respect du voisinage (silence 22h-8h)',
+        'Nombre maximum de voyageurs : 6'
+      ]
+    };
   };
 
   if (loading) {

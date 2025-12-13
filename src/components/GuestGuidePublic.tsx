@@ -20,18 +20,33 @@ interface GuestGuidePublicProps {
   propertyId?: string;
 }
 
-const GuestGuidePublic: React.FC<GuestGuidePublicProps> = ({ propertyId = 'demo' }) => {
+const GuestGuidePublic: React.FC<GuestGuidePublicProps> = ({ propertyId }) => {
   const [guide, setGuide] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [selectedPropertyId, setSelectedPropertyId] = useState<string | undefined>(propertyId);
+  const [availableProperties, setAvailableProperties] = useState<any[]>([]);
 
   useEffect(() => {
-    loadGuide();
-  }, [propertyId]);
+    // Charger propriétés disponibles
+    const properties = JSON.parse(localStorage.getItem('gitemaster_properties') || '[]');
+    setAvailableProperties(properties);
+    
+    // Si pas de propertyId passé, prendre la première propriété
+    if (!propertyId && properties.length > 0) {
+      setSelectedPropertyId(properties[0].id);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (selectedPropertyId || availableProperties.length > 0) {
+      loadGuide();
+    }
+  }, [selectedPropertyId, availableProperties]);
 
   const loadGuide = () => {
-    // Charger la propriété depuis PropertyService
+    // Charger la propriété depuis localStorage
     const properties = JSON.parse(localStorage.getItem('gitemaster_properties') || '[]');
-    const property = properties.find((p: any) => p.id === propertyId) || properties[0];
+    const property = properties.find((p: any) => p.id === selectedPropertyId) || properties[0];
     
     if (!property) {
       // Pas de propriété, guide démo
@@ -155,6 +170,24 @@ const GuestGuidePublic: React.FC<GuestGuidePublicProps> = ({ propertyId = 'demo'
           <Home size={48} className="mx-auto mb-4" />
           <h1 className="text-4xl font-bold mb-2">{guide.propertyName}</h1>
           <p className="text-blue-100 text-lg">Bienvenue ! Voici toutes les infos pour votre séjour</p>
+          
+          {/* Sélecteur de propriété (si plusieurs) */}
+          {availableProperties.length > 1 && (
+            <div className="mt-6 max-w-md mx-auto">
+              <label className="block text-sm text-blue-100 mb-2">Changer de propriété :</label>
+              <select
+                value={selectedPropertyId}
+                onChange={(e) => setSelectedPropertyId(e.target.value)}
+                className="w-full px-4 py-2 rounded-lg bg-white/20 backdrop-blur text-white border border-white/30 focus:outline-none focus:ring-2 focus:ring-white/50"
+              >
+                {availableProperties.map(prop => (
+                  <option key={prop.id} value={prop.id} className="text-gray-900">
+                    {prop.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
         </div>
       </div>
 

@@ -129,7 +129,7 @@ class PropertyService {
   }
 
   addProperty(property: Property): void {
-    property.id = `prop_${Date.now()}`;
+    property.id = crypto.randomUUID();
     property.createdAt = new Date().toISOString();
     property.updatedAt = new Date().toISOString();
     this.properties.push(property);
@@ -295,7 +295,7 @@ class PropertyService {
 
     const duplicate: Property = {
       ...property,
-      id: `prop_${Date.now()}`,
+      id: crypto.randomUUID(),
       name: `${property.name} (Copie)`,
       isPublished: false,
       createdAt: new Date().toISOString(),
@@ -316,7 +316,7 @@ class PropertyService {
   importProperty(jsonString: string): boolean {
     try {
       const property = JSON.parse(jsonString) as Property;
-      property.id = `prop_${Date.now()}`;
+      property.id = crypto.randomUUID();
       property.createdAt = new Date().toISOString();
       property.updatedAt = new Date().toISOString();
       this.properties.push(property);

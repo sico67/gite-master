@@ -1,0 +1,38 @@
+{
+  "name": "gite-master-backend",
+  "version": "1.0.0",
+  "description": "Backend API pour Gîte Master - Gestion de locations saisonnières",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon --exec ts-node stripe-api.ts & nodemon --exec ts-node messaging-api.ts",
+    "start": "node dist/stripe-api.js & node dist/messaging-api.js",
+    "build": "tsc",
+    "test": "jest"
+  },
+  "keywords": [
+    "stripe",
+    "sendgrid",
+    "twilio",
+    "booking",
+    "rental"
+  ],
+  "author": "Votre Nom",
+  "license": "MIT",
+  "dependencies": {
+    "@sendgrid/mail": "^7.7.0",
+    "@supabase/supabase-js": "^2.39.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "stripe": "^14.9.0",
+    "twilio": "^4.19.3"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.10.6",
+    "nodemon": "^3.0.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}
